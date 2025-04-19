@@ -12,8 +12,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
     ? "-right-2 rounded-bl-xl"
     : "-left-2 rounded-br-xl";
   const roundSmall = fromUser
-    ? "-right-4 rounded-bl-lg"
-    : "-left-4 rounded-br-lg";
+    ? "-right-4 rounded-bl-xl"
+    : "-left-4 rounded-br-xl";
   const bgColor = fromUser ? "bg-blue-500" : "bg-gray-300";
   const textColor = fromUser ? "text-white" : "text-black";
 
