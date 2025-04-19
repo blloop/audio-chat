@@ -18,10 +18,10 @@ interface SpeechContextType {
 const SpeechContext = createContext<SpeechContextType>({
   transcript: "",
   listening: false,
-  reset: () => { },
-  listen: () => { },
-  stop: () => { },
-  speak: () => { },
+  reset: () => {},
+  listen: () => {},
+  stop: () => {},
+  speak: () => {},
   supported: false,
 });
 

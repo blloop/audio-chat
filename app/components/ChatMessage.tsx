@@ -14,7 +14,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
   const roundSmall = fromUser
     ? "-right-4 rounded-bl-xl"
     : "-left-4 rounded-br-xl";
-  const bgColor = fromUser ? "bg-blue-500" : "bg-gray-300";
+  const bgColor = fromUser ? "bg-blue-400" : "bg-gray-200";
   const textColor = fromUser ? "text-white" : "text-black";
 
   return (
@@ -29,7 +29,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
       <span className="z-20">{message}</span>
       <div
         className={cn(
-          "absolute z-10 bottom-0 w-4 h-6 bg-stone-500",
+          "absolute z-10 bottom-0 w-4 h-6",
           alignment,
           bgColor,
           roundLarge,
@@ -37,7 +37,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
       ></div>
       <div
         className={cn(
-          "absolute z-10 bottom-0 w-4 h-6 bg-gray-100",
+          "absolute z-10 bottom-0 w-4 h-6 bg-white",
           alignment,
           roundSmall,
         )}
