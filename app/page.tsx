@@ -3,7 +3,7 @@
 import Image from "next/image";
 import ChatMessage from "./components/ChatMessage";
 import ArrowUp from "./ui/ArrowUp.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSpeech } from "./utils/speechContext";
 import AudioInput from "./components/AudioInput";
 
@@ -15,13 +15,20 @@ export default function Home() {
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([INIT_PROMPT]);
-  const { transcript, listening, speak } = useSpeech();
+  const { transcript, listening } = useSpeech();
+  const messageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setInput(transcript);
   }, [transcript]);
 
-  const addMessage = () => {};
+  const addMessage = () => {
+    setMessages([...messages, input, input.toUpperCase()]);
+  };
+
+  useEffect(() => {
+    messageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-screen font-sans bg-white">
@@ -34,6 +41,7 @@ export default function Home() {
         {messages.map((e, i) => (
           <ChatMessage key={i} message={e} fromUser={i % 2 === 1} />
         ))}
+        <div ref={messageRef} />
       </div>
 
       {/* Bottom input area */}
@@ -50,6 +58,7 @@ export default function Home() {
           />
           <button
             disabled={input.length === 0}
+            onClick={addMessage}
             type="button"
             className="bg-purple-500 hover:bg-purple-700 disabled:bg-gray-400 disabled:pointer-events-none transition-colors text-white font-bold p-2 rounded-full"
           >
