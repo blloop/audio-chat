@@ -1,9 +1,7 @@
-import Image from "next/image";
 import { useState } from "react";
 import { useSpeech } from "../utils/speechContext";
-import CircleStop from "../ui/CircleStop.svg";
-import Microphone from "../ui/Microphone.svg";
 import { cn } from "../utils/cn";
+import { CircleStop, Mic } from "lucide-react";
 
 export default function AudioInput({
   setInput,
@@ -36,26 +34,14 @@ export default function AudioInput({
         type="button"
         onClick={audioButton}
         className={cn(
-          "bg-gray-300 hover:bg-gray-400 p-2 px-3 rounded-full transition-colors",
+          "flex text-black bg-gray-300 hover:bg-gray-400 p-2 px-3 rounded-full transition-colors",
           listening && "bg-purple-300 hover:bg-purple-300",
         )}
       >
         {listening ? (
-          <Image
-            alt="Stop icon"
-            className="inline"
-            width={24}
-            height={24}
-            src={CircleStop}
-          />
+          <CircleStop />
         ) : (
-          <Image
-            alt="Microphone icon"
-            className="inline"
-            width={24}
-            height={24}
-            src={Microphone}
-          />
+          <Mic />
         )}
         <span className="text-black ml-2">Mic Input</span>
       </button>

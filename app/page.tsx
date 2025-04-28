@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import ChatMessage from "./components/ChatMessage";
-import ArrowUp from "./ui/ArrowUp.svg";
 import { useEffect, useState, useRef } from "react";
 import { useSpeech } from "./utils/speechContext";
 import AudioInput from "./components/AudioInput";
+import { ArrowUp } from "lucide-react";
 
 // https://replicate.com/jaaari/kokoro-82m
 // https://replicate.com/meta/meta-llama-3-8b-instruct
@@ -24,6 +24,7 @@ export default function Home() {
 
   const addMessage = () => {
     setMessages([...messages, input, input.toUpperCase()]);
+    setInput("");
   };
 
   useEffect(() => {
@@ -62,13 +63,7 @@ export default function Home() {
             type="button"
             className="bg-purple-500 hover:bg-purple-700 disabled:bg-gray-400 disabled:pointer-events-none transition-colors text-white font-bold p-2 rounded-full"
           >
-            <Image
-              className="text-white"
-              alt="Up arrow"
-              width={32}
-              height={32}
-              src={ArrowUp}
-            />
+            <ArrowUp />
           </button>
         </div>
         <AudioInput setInput={setInput} />

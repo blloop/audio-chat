@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../utils/cn";
+import { AudioLines, Play } from "lucide-react";
 
 interface ChatMessageProps {
   message: string;
@@ -69,13 +70,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
   return (
     <div
       className={cn(
-        "relative p-3 rounded-3xl max-w-xs",
+        "flex flex-col relative p-3 rounded-3xl max-w-xs",
         alignment,
         bgColor,
         textColor,
       )}
     >
-      <span className="z-20">{message}</span>
+      <span className="z-20 break-all">{message}</span>
       <div
         className={cn(
           "absolute z-10 bottom-0 w-4 h-6",
@@ -91,7 +92,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
           roundSmall,
         )}
       ></div>
-      <button type="button" onClick={() => kokoroSpeak(message)}>PLAY</button>
+      {!fromUser &&
+        <button className="absolute p-2 rounded-full -right-10 bottom-1 hover:bg-purple-200 transition-colors" type="button" onClick={() => kokoroSpeak(message)}>
+          <AudioLines className="text-purple-500" />
+        </button>
+      }
     </div>
   );
 };
