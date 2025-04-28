@@ -5,66 +5,14 @@ import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
 interface ChatMessageProps {
   message: string;
   fromUser: boolean;
+  audioPath: string | null;
 }
 
-const kokoroSpeak = async (
-  message: string,
-  setIndex: (index: number) => void,
-) => {
-  if (message && message.length > 0) {
-    setIndex(1);
-    try {
-      const response = await fetch("/api/kokoro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: message }),
-      });
-
-      if (!response.ok) {
-        // Get the detailed error if available
-        let errorDetails = `API request failed with status ${response.status}`;
-        try {
-          const errorData = await response.json(); // Try parsing JSON error response
-          errorDetails = errorData.details || errorData.error || errorDetails;
-        } catch (e) {
-          // If response is not JSON, use the status text
-          errorDetails = response.statusText || errorDetails;
-        }
-        setIndex(0);
-        throw new Error(`Speech API Error: ${errorDetails}`);
-      }
-
-      // Get the audio data as a Blob
-      const audioBlob = await response.blob();
-
-      // Create an object URL from the Blob
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      // Indicate that the audio is playing
-      setIndex(2);
-
-      // Create an Audio object and play it
-      const audio = new Audio(audioUrl);
-      audio.play().catch((playError) => {
-        console.error("Error playing audio:", playError);
-        URL.revokeObjectURL(audioUrl);
-        setIndex(0);
-      });
-
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        setIndex(0);
-      };
-    } catch (error) {
-      setIndex(0);
-      console.error("Error fetching or playing speech:", error);
-    }
-  }
-};
-
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  message,
+  fromUser,
+  audioPath,
+}) => {
   const alignment = fromUser ? "self-end" : "self-start";
   const roundLarge = fromUser
     ? "-right-2 rounded-bl-xl"
@@ -77,6 +25,69 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
 
   // Index state: 0 = Base, 1 = Loading, 2 = Playing
   const [index, setIndex] = useState(0);
+  const [audioUrl, setAudioUrl] = useState<string | null>(audioPath);
+
+  const playAudio = async () => {
+    if (message && message.length > 0) {
+      if (audioUrl) {
+        // Play cached fetched audio
+        setIndex(2);
+        const audio = new Audio(audioUrl);
+        audio.play().catch((playError) => {
+          console.error("Error playing cached fetched audio:", playError);
+          setIndex(0);
+        });
+        audio.onended = () => {
+          setIndex(0);
+        };
+      } else {
+        // Fetch new audio
+        setIndex(1);
+        try {
+          const response = await fetch("/api/kokoro", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: message }),
+          });
+
+          if (!response.ok) {
+            let errorDetails = `API request failed with status ${response.status}`;
+            try {
+              const errorData = await response.json();
+              errorDetails =
+                errorData.details || errorData.error || errorDetails;
+            } catch (e) {
+              errorDetails = response.statusText || errorDetails;
+            }
+            setIndex(0);
+            throw new Error(`Speech API Error: ${errorDetails}`);
+          }
+
+          const audioBlob = await response.blob();
+          const newAudioUrl = URL.createObjectURL(audioBlob);
+          setAudioUrl(newAudioUrl);
+
+          setIndex(2);
+          const audio = new Audio(newAudioUrl);
+          audio.play().catch((playError) => {
+            console.error("Error playing fetched audio:", playError);
+            URL.revokeObjectURL(newAudioUrl);
+            setAudioUrl(null);
+            setIndex(0);
+          });
+
+          audio.onended = () => {
+            setIndex(0);
+          };
+        } catch (error) {
+          setIndex(0);
+          console.error("Error fetching or playing speech:", error);
+        }
+      }
+    }
+  };
 
   return (
     <div
@@ -110,7 +121,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
             index > 0 ? "pointer-events-none" : "",
           )}
           type="button"
-          onClick={() => kokoroSpeak(message, (idx: number) => setIndex(idx))}
+          onClick={playAudio}
         >
           {index === 1 ? (
             <Ellipsis className="text-purple-500" />

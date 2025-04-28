@@ -40,7 +40,12 @@ export default function Home() {
       <div className="flex flex-col flex-grow overflow-y-auto p-4 space-y-4">
         <div className="flex-1"></div>
         {messages.map((e, i) => (
-          <ChatMessage key={i} message={e} fromUser={i % 2 === 1} />
+          <ChatMessage
+            key={i}
+            message={e}
+            fromUser={i % 2 === 1}
+            audioPath={i === 0 ? "/initial_message.wav" : null}
+          />
         ))}
         <div ref={messageRef} />
       </div>
