@@ -1,24 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "../utils/cn";
-import { AudioLines, Play } from "lucide-react";
+import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
 
 interface ChatMessageProps {
   message: string;
   fromUser: boolean;
 }
 
-const kokoroSpeak = async (message: string) => {
+const kokoroSpeak = async (
+  message: string,
+  setIndex: (index: number) => void,
+) => {
   if (message && message.length > 0) {
-    const inputParams = {
-      text: message,
-    };
+    setIndex(1);
     try {
       const response = await fetch("/api/kokoro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(inputParams),
+        body: JSON.stringify({ text: message }),
       });
 
       if (!response.ok) {
@@ -31,6 +32,7 @@ const kokoroSpeak = async (message: string) => {
           // If response is not JSON, use the status text
           errorDetails = response.statusText || errorDetails;
         }
+        setIndex(0);
         throw new Error(`Speech API Error: ${errorDetails}`);
       }
 
@@ -40,17 +42,23 @@ const kokoroSpeak = async (message: string) => {
       // Create an object URL from the Blob
       const audioUrl = URL.createObjectURL(audioBlob);
 
+      // Indicate that the audio is playing
+      setIndex(2);
+
       // Create an Audio object and play it
       const audio = new Audio(audioUrl);
       audio.play().catch((playError) => {
         console.error("Error playing audio:", playError);
         URL.revokeObjectURL(audioUrl);
+        setIndex(0);
       });
 
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        setIndex(0);
       };
     } catch (error) {
+      setIndex(0);
       console.error("Error fetching or playing speech:", error);
     }
   }
@@ -66,6 +74,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
     : "-left-4 rounded-br-xl";
   const bgColor = fromUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = fromUser ? "text-white" : "text-black";
+
+  // Index state: 0 = Base, 1 = Loading, 2 = Playing
+  const [index, setIndex] = useState(0);
 
   return (
     <div
@@ -92,11 +103,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, fromUser }) => {
           roundSmall,
         )}
       ></div>
-      {!fromUser &&
-        <button className="absolute p-2 rounded-full -right-10 bottom-1 hover:bg-purple-200 transition-colors" type="button" onClick={() => kokoroSpeak(message)}>
-          <AudioLines className="text-purple-500" />
+      {!fromUser && (
+        <button
+          className={cn(
+            "absolute p-2 rounded-full -right-10 bottom-1 hover:bg-purple-200 transition-colors",
+            index > 0 ? "pointer-events-none" : "",
+          )}
+          type="button"
+          onClick={() => kokoroSpeak(message, (idx: number) => setIndex(idx))}
+        >
+          {index === 1 ? (
+            <Ellipsis className="text-purple-500" />
+          ) : index === 2 ? (
+            <Volume2Icon className="text-purple-500" />
+          ) : (
+            <AudioLines className="text-purple-500" />
+          )}
         </button>
-      }
+      )}
     </div>
   );
 };

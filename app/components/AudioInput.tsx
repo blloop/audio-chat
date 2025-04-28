@@ -38,11 +38,7 @@ export default function AudioInput({
           listening && "bg-purple-300 hover:bg-purple-300",
         )}
       >
-        {listening ? (
-          <CircleStop />
-        ) : (
-          <Mic />
-        )}
+        {listening ? <CircleStop /> : <Mic />}
         <span className="text-black ml-2">Mic Input</span>
       </button>
       <div />
