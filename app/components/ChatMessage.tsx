@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { cn } from "../utils/cn";
 import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
 
@@ -137,4 +137,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   );
 };
 
-export default ChatMessage;
+const MemoizedChatMessage = memo(ChatMessage);
+
+export default MemoizedChatMessage;

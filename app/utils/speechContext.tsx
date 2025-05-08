@@ -2,6 +2,7 @@
 
 import SpeechRecognition, {
   useSpeechRecognition,
+// @ts-ignore
 } from "react-speech-recognition";
 import { createContext, ReactNode, useContext, useState } from "react";
 
@@ -33,6 +34,11 @@ const SpeechContext = createContext<SpeechContextType>({
   setAuto: () => {},
 });
 
+const speak = (text: string) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+};
+
 export const SpeechProvider = ({ children }: { children: ReactNode }) => {
   const {
     transcript,
@@ -42,11 +48,6 @@ export const SpeechProvider = ({ children }: { children: ReactNode }) => {
   } = useSpeechRecognition();
   const [input, setInput] = useState("");
   const [auto, setAuto] = useState(false);
-
-  const speak = (text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
-  };
 
   return (
     <SpeechContext.Provider

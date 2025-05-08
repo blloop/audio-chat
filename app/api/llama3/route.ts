@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     }
 
     const streamIterator = replicate.stream("meta/meta-llama-3-8b-instruct", {
-      input: { prompt },
+      input: { prompt, max_new_tokens: 128 },
     });
 
     // Convert the async iterator to a ReadableStream

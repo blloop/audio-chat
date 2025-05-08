@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useMemo } from 'react';
 
 interface MessageContextType {
   messages: string[];
@@ -59,8 +59,10 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setMessages([...messages, message, output]);
   };
 
+  const contextValue = useMemo(() => ({ messages, addMessage }), [messages, addMessage]);
+
   return (
-    <MessageContext.Provider value={{ messages, addMessage }}>
+    <MessageContext.Provider value={contextValue}>
       {children}
     </MessageContext.Provider>
   );
