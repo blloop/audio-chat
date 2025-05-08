@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SpeechProvider } from "./utils/speechContext";
+import { MessageProvider } from "./utils/messageContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="relative antialiased mx-auto max-w-xl">
-        <SpeechProvider>{children}</SpeechProvider>
+        <SpeechProvider>
+          <MessageProvider>{children}</MessageProvider>
+        </SpeechProvider>
       </body>
     </html>
   );

@@ -3,7 +3,7 @@
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 interface SpeechContextType {
   transcript: string;
@@ -13,6 +13,8 @@ interface SpeechContextType {
   stop: () => void;
   speak: (text: string) => void;
   supported: boolean;
+  input: string;
+  setInput: (text: string) => void;
 }
 
 const SpeechContext = createContext<SpeechContextType>({
@@ -23,6 +25,8 @@ const SpeechContext = createContext<SpeechContextType>({
   stop: () => {},
   speak: () => {},
   supported: false,
+  input: "",
+  setInput: () => {},
 });
 
 export const SpeechProvider = ({ children }: { children: ReactNode }) => {
@@ -32,6 +36,7 @@ export const SpeechProvider = ({ children }: { children: ReactNode }) => {
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+  const [input, setInput] = useState("");
 
   const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -48,6 +53,8 @@ export const SpeechProvider = ({ children }: { children: ReactNode }) => {
         stop: SpeechRecognition.stopListening,
         speak,
         supported: browserSupportsSpeechRecognition,
+        input,
+        setInput,
       }}
     >
       {children}
