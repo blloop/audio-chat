@@ -26,24 +26,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`[API Route] Received text: "${text}", voice: "${voice}"`);
-
-    const input = {
-      text: text,
-      voice: voice,
-    };
-
-    console.log("[API Route] Calling Replicate with input:", input);
+    const input = { text: text, voice: voice };
 
     // Call the Replicate API
     const output = await replicate.run(kokoroId, { input });
 
-    console.log("[API Route] Received output from Replicate:", output);
-
     // Check if the output is a ReadableStream
     if (output instanceof ReadableStream) {
-      // Stream the audio data back to the client
-      // Assuming WAV format, adjust if needed (e.g., audio/mpeg for MP3)
       return new NextResponse(output, {
         status: 200,
         headers: {
@@ -51,24 +40,18 @@ export async function POST(req: NextRequest) {
         },
       });
     } else {
-      // Handle unexpected output format from Replicate
-      console.error(
-        "[API Route] Unexpected output format from Replicate:",
-        output,
-      );
+      console.error("Unexpected output format from Replicate:", output);
       return NextResponse.json(
         { error: "Unexpected response format from speech service" },
         { status: 500 },
       );
     }
   } catch (error) {
-    console.error("[API Route] Error calling Replicate:", error);
-    // Extract a meaningful error message and include it in the response
+    console.error("Error calling Replicate:", error);
     const errorMessage =
       error instanceof Error
         ? error.message
         : "Unknown error during speech generation";
-    // Return the specific error message from Replicate in the 'details' field
     return NextResponse.json(
       { error: "Failed to generate speech", details: errorMessage },
       { status: 500 },

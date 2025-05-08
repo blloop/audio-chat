@@ -98,7 +98,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         textColor,
       )}
     >
-      <span className="z-20 break-all">{message}</span>
+      <span className="z-20">{message}</span>
       <div
         className={cn(
           "absolute z-10 bottom-0 w-4 h-6",

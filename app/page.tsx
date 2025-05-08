@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import ChatMessage from "./components/ChatMessage";
 import { useEffect, useState, useRef } from "react";
 import { useSpeech } from "./utils/speechContext";
@@ -22,9 +21,43 @@ export default function Home() {
     setInput(transcript);
   }, [transcript]);
 
-  const addMessage = () => {
-    setMessages([...messages, input, input.toUpperCase()]);
+  async function getText(text: string) {
+    const response = await fetch("/api/llama3", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: text }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("ReadableStream not supported in this browser.");
+    }
+
+    let result = "";
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      result += decoder.decode(value);
+    }
+
+    return result;
+  }
+
+  const addMessage = async () => {
+    setMessages([...messages, input]);
     setInput("");
+    const text = await getText(input);
+    setMessages([...messages, input, text]);
   };
 
   useEffect(() => {
@@ -56,6 +89,7 @@ export default function Home() {
           <input
             type="text"
             placeholder={listening ? "Recording..." : "Type your input here..."}
+            disabled={listening}
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
