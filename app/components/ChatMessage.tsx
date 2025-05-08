@@ -90,34 +90,35 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col relative p-3 rounded-3xl max-w-xs",
-        alignment,
-        bgColor,
-        textColor,
-      )}
-    >
-      <span className="z-20">{message}</span>
+    <div className={cn("flex flex-wrap", alignment)}>
       <div
         className={cn(
-          "absolute z-10 bottom-0 w-4 h-6",
-          alignment,
+          "relative flex flex-col relative p-3 rounded-3xl max-w-xs",
           bgColor,
-          roundLarge,
+          textColor,
         )}
-      ></div>
-      <div
-        className={cn(
-          "absolute z-10 bottom-0 w-4 h-6 bg-white",
-          alignment,
-          roundSmall,
-        )}
-      ></div>
+      >
+        <span className="z-20">{message}</span>
+        <div
+          className={cn(
+            "absolute z-10 bottom-0 w-4 h-6",
+            alignment,
+            bgColor,
+            roundLarge,
+          )}
+        ></div>
+        <div
+          className={cn(
+            "absolute z-10 bottom-0 w-4 h-6 bg-white",
+            alignment,
+            roundSmall,
+          )}
+        ></div>
+      </div>
       {!fromUser && (
         <button
           className={cn(
-            "absolute p-2 rounded-full -right-10 bottom-1 hover:bg-purple-200 transition-colors",
+            "self-end p-2 rounded-full hover:bg-purple-200 transition-colors",
             index > 0 ? "pointer-events-none" : "",
           )}
           type="button"

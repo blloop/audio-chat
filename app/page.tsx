@@ -24,7 +24,7 @@ export default function Home() {
     if (!listening && transcript && auto) {
       handleMessage();
     }
-  }, [listening, transcript])
+  }, [listening, transcript]);
 
   const handleMessage = () => {
     setInput("");
@@ -38,7 +38,7 @@ export default function Home() {
           <p className="text-2xl font-semibold text-gray-500">AudioChat</p>
         </div>
         {/* Message list area */}
-        <div className="flex flex-col flex-grow overflow-y-auto p-4 space-y-4">
+        <div className="flex flex-col flex-grow overflow-y-auto px-4 space-y-4">
           <div className="flex-1"></div>
           {messages.map((e, i) => (
             <ChatMessage

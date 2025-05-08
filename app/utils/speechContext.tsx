@@ -60,6 +60,8 @@ export const SpeechProvider = ({ children }: { children: ReactNode }) => {
         supported: browserSupportsSpeechRecognition,
         input,
         setInput,
+        auto,
+        setAuto,
       }}
     >
       {children}

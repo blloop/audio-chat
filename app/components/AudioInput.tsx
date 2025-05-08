@@ -23,29 +23,30 @@ export default function AudioInput() {
   };
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex flex-row-reverse flex-wrap gap-4 items-center justify-between">
+      <div className="px-2 flex gap-4 items-center">
+        <input
+          id="autoSend"
+          type="checkbox"
+          className="scale-[1.5]"
+          checked={auto}
+          onChange={(e) => setAuto(e.target.checked)}
+        />
+        <label className="text-black" htmlFor="autoSend">
+          Auto Send
+        </label>
+      </div>
       <button
         type="button"
         onClick={audioButton}
         className={cn(
-          "flex text-black bg-gray-300 hover:bg-gray-400 p-2 px-3 rounded-full transition-colors",
+          "flex shrink-0 text-black bg-gray-300 hover:bg-gray-400 p-2 px-3 rounded-full transition-colors",
           listening && "bg-purple-300 hover:bg-purple-300",
         )}
       >
         {listening ? <CircleStop /> : <Mic />}
         <span className="text-black ml-2">Mic Input</span>
       </button>
-      <div />
-      <input
-        id="autoSend"
-        type="checkbox"
-        className="scale-[1.5]"
-        checked={auto}
-        onChange={(e) => setAuto(e.target.checked)}
-      />
-      <label className="text-black" htmlFor="autoSend">
-        Auto Send
-      </label>
     </div>
   );
 }
