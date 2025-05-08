@@ -15,6 +15,8 @@ interface SpeechContextType {
   supported: boolean;
   input: string;
   setInput: (text: string) => void;
+  auto: boolean;
+  setAuto: (bool: boolean) => void;
 }
 
 const SpeechContext = createContext<SpeechContextType>({
@@ -27,6 +29,8 @@ const SpeechContext = createContext<SpeechContextType>({
   supported: false,
   input: "",
   setInput: () => {},
+  auto: false,
+  setAuto: () => {},
 });
 
 export const SpeechProvider = ({ children }: { children: ReactNode }) => {
@@ -37,6 +41,7 @@ export const SpeechProvider = ({ children }: { children: ReactNode }) => {
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
   const [input, setInput] = useState("");
+  const [auto, setAuto] = useState(false);
 
   const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text);

@@ -9,7 +9,7 @@ import { useMessage, MessageProvider } from "./utils/messageContext";
 
 export default function Home() {
   const { messages, addMessage } = useMessage();
-  const { transcript, listening, input, setInput } = useSpeech();
+  const { transcript, listening, input, setInput, auto } = useSpeech();
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -19,6 +19,12 @@ export default function Home() {
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!listening && transcript && auto) {
+      handleMessage();
+    }
+  }, [listening, transcript])
 
   const handleMessage = () => {
     setInput("");
@@ -69,7 +75,7 @@ export default function Home() {
               <ArrowUp />
             </button>
           </div>
-          <AudioInput setInput={setInput} />
+          <AudioInput />
         </div>
       </div>
     </MessageProvider>

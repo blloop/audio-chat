@@ -1,15 +1,9 @@
-import { useState } from "react";
 import { useSpeech } from "../utils/speechContext";
 import { cn } from "../utils/cn";
 import { CircleStop, Mic } from "lucide-react";
 
-export default function AudioInput({
-  setInput,
-}: {
-  setInput: (input: string) => void;
-}) {
-  const { listen, listening, supported } = useSpeech();
-  const [auto, setAuto] = useState(true);
+export default function AudioInput() {
+  const { listen, listening, supported, setInput, auto, setAuto } = useSpeech();
 
   if (!supported) {
     return (
