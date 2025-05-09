@@ -1,10 +1,16 @@
 "use client";
 
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useMemo } from "react";
+
+export type Message = {
+  text: string;
+  isUser: boolean;
+  isLoading: boolean;
+};
 
 interface MessageContextType {
-  messages: string[];
-  addMessage: (message: string) => void;
+  messages: Message[];
+  addMessage: (text: string) => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -12,14 +18,23 @@ const MessageContext = createContext<MessageContextType | undefined>(undefined);
 export const useMessage = () => {
   const context = useContext(MessageContext);
   if (!context) {
-    throw new Error('useMessage must be used within a MessageProvider');
+    throw new Error("useMessage must be used within a MessageProvider");
   }
   return context;
 };
 
-export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const INIT_PROMPT = "Hello! How can I help you today?";
-  const [messages, setMessages] = useState<string[]>([INIT_PROMPT]);
+
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      text: INIT_PROMPT,
+      isUser: false,
+      isLoading: false,
+    },
+  ]);
 
   async function generateText(prompt: string) {
     const response = await fetch("/api/llama3", {
@@ -53,13 +68,23 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return result;
   }
 
-  const addMessage = async (message: string) => {
-    setMessages([...messages, message]);
-    const output = await generateText(message);
-    setMessages([...messages, message, output]);
+  const addMessage = async (text: string) => {
+    const userMessage: Message = { text, isUser: true, isLoading: false };
+    const tempMessage: Message = { text: "", isUser: false, isLoading: true };
+    setMessages([...messages, userMessage, tempMessage]);
+    const output = await generateText(text);
+    const chatMessage: Message = {
+      text: output,
+      isUser: false,
+      isLoading: false,
+    };
+    setMessages([...messages, userMessage, chatMessage]);
   };
 
-  const contextValue = useMemo(() => ({ messages, addMessage }), [messages, addMessage]);
+  const contextValue = useMemo(
+    () => ({ messages, addMessage }),
+    [messages, addMessage],
+  );
 
   return (
     <MessageContext.Provider value={contextValue}>

@@ -2,7 +2,7 @@
 
 import SpeechRecognition, {
   useSpeechRecognition,
-// @ts-ignore
+  // @ts-ignore
 } from "react-speech-recognition";
 import { createContext, ReactNode, useContext, useState } from "react";
 

@@ -1,34 +1,31 @@
 import React, { memo, useState } from "react";
 import { cn } from "../utils/cn";
 import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
+import { Message } from "../utils/messageContext";
+import Image from "next/image";
 
 interface ChatMessageProps {
-  message: string;
-  fromUser: boolean;
+  message: Message;
   audioPath: string | null;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({
-  message,
-  fromUser,
-  audioPath,
-}) => {
-  const alignment = fromUser ? "self-end" : "self-start";
-  const roundLarge = fromUser
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath }) => {
+  const alignment = message.isUser ? "self-end" : "self-start";
+  const roundLarge = message.isUser
     ? "-right-2 rounded-bl-xl"
     : "-left-2 rounded-br-xl";
-  const roundSmall = fromUser
+  const roundSmall = message.isUser
     ? "-right-4 rounded-bl-xl"
     : "-left-4 rounded-br-xl";
-  const bgColor = fromUser ? "bg-purple-500" : "bg-gray-200";
-  const textColor = fromUser ? "text-white" : "text-black";
+  const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
+  const textColor = message.isUser ? "text-white" : "text-black";
 
   // Index state: 0 = Base, 1 = Loading, 2 = Playing
   const [index, setIndex] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(audioPath);
 
   const playAudio = async () => {
-    if (message && message.length > 0) {
+    if (message && !message.isLoading && message.text.length > 0) {
       if (audioUrl) {
         // Play cached fetched audio
         setIndex(2);
@@ -49,7 +46,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ text: message }),
+            body: JSON.stringify({ text: message.text }),
           });
 
           if (!response.ok) {
@@ -98,7 +95,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           textColor,
         )}
       >
-        <span className="z-20">{message}</span>
+        <span className="z-20">
+          {message.isLoading ? (
+            <Image
+              className="w-10 h-4 px-1 object-cover"
+              width={180}
+              height={10}
+              alt="3 animated loading dots."
+              src="/loading.svg"
+            />
+          ) : (
+            message.text
+          )}
+        </span>
         <div
           className={cn(
             "absolute z-10 bottom-0 w-4 h-6",
@@ -115,7 +124,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           )}
         ></div>
       </div>
-      {!fromUser && (
+      {!message.isUser && !message.isLoading && (
         <button
           className={cn(
             "self-end p-2 rounded-full hover:bg-purple-200 transition-colors",
