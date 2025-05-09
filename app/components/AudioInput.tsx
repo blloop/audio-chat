@@ -1,9 +1,11 @@
 import { useSpeech } from "../utils/speechContext";
 import { cn } from "../utils/cn";
 import { CircleStop, Mic } from "lucide-react";
+import { useConfig } from "../utils/configContext";
 
 export default function AudioInput() {
-  const { listen, listening, supported, setInput, auto, setAuto } = useSpeech();
+  const { listen, listening, supported, setInput } = useSpeech();
+  const { autoSend, setAutoSend, autoSpeak, setAutoSpeak } = useConfig();
 
   if (!supported) {
     return (
@@ -29,11 +31,21 @@ export default function AudioInput() {
           id="autoSend"
           type="checkbox"
           className="scale-[1.5]"
-          checked={auto}
-          onChange={(e) => setAuto(e.target.checked)}
+          checked={autoSend}
+          onChange={(e) => setAutoSend(e.target.checked)}
         />
         <label className="text-black" htmlFor="autoSend">
           Auto Send
+        </label>
+        <input
+          id="autoPlay"
+          type="checkbox"
+          className="scale-[1.5]"
+          checked={autoSpeak}
+          onChange={(e) => setAutoSpeak(e.target.checked)}
+        />
+        <label className="text-black" htmlFor="autoPlay">
+          Autoplay
         </label>
       </div>
       <button

@@ -6,10 +6,12 @@ import { useSpeech } from "./utils/speechContext";
 import AudioInput from "./components/AudioInput";
 import { ArrowUp } from "lucide-react";
 import { useMessage, MessageProvider } from "./utils/messageContext";
+import { useConfig } from "./utils/configContext";
 
 export default function Home() {
   const { messages, addMessage } = useMessage();
-  const { transcript, listening, input, setInput, auto } = useSpeech();
+  const { transcript, listening, input, setInput } = useSpeech();
+  const { autoSend } = useConfig();
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function Home() {
   }, [messages]);
 
   useEffect(() => {
-    if (!listening && transcript && auto) {
+    if (!listening && transcript && autoSend) {
       handleMessage();
     }
   }, [listening, transcript]);
