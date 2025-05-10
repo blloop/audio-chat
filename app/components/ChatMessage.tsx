@@ -27,6 +27,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
   const { playing, setPlaying } = useMessage();
   const [audioUrl, setAudioUrl] = useState<string | null>(AUDIO_PATH);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [fetching, setFetching] = useState(false);
 
   const playAudio = async () => {
     if (message && !message.isLoading && message.text.length > 0) {
@@ -37,6 +38,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
         startAudio();
       } else {
         // Fetch new audio
+        setFetching(true);
         try {
           const response = await fetch("/api/kokoro", {
             method: "POST",
@@ -61,12 +63,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
           const audioBlob = await response.blob();
           const newAudioUrl = URL.createObjectURL(audioBlob);
           setAudioUrl(newAudioUrl);
+          setFetching(false);
 
           const audio = new Audio(newAudioUrl);
           audioRef.current = audio;
           startAudio();
         } catch (error) {
           console.error("Error fetching or playing speech:", error);
+          setFetching(false);
         }
       }
     }
@@ -162,6 +166,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
         >
           {playing === index ? (
             <StopCircle className="text-red-500" />
+          ) : fetching ? (
+            <Ellipsis className="text-purple-500" />
           ) : (
             <AudioLines className="text-purple-500" />
           )}

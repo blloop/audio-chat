@@ -74,9 +74,9 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const addMessage = async (text: string) => {
-    setSending(true);
     const userMessage: Message = { text, isUser: true, isLoading: false };
     const tempMessage: Message = { text: "", isUser: false, isLoading: true };
+    setSending(true);
     setMessages([...messages, userMessage, tempMessage]);
     const output = await generateText(text);
     const chatMessage: Message = {
@@ -90,7 +90,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue = useMemo(
     () => ({ messages, addMessage, sending, playing, setPlaying }),
-    [messages, playing],
+    [messages, sending, playing],
   );
 
   return (
