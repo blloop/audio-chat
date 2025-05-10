@@ -101,7 +101,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath }) => {
               className="w-10 h-4 px-1 object-cover"
               width={180}
               height={10}
-              alt="3 animated loading dots."
+              alt="Message is loading."
               src="/loading.svg"
             />
           ) : (
