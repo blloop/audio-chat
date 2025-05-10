@@ -11,6 +11,9 @@ export type Message = {
 interface MessageContextType {
   messages: Message[];
   addMessage: (text: string) => void;
+  sending: boolean;
+  playing: number;
+  setPlaying: (idx: number) => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -28,6 +31,8 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const INIT_PROMPT = "Hello! How can I help you today?";
 
+  const [sending, setSending] = useState(false);
+  const [playing, setPlaying] = useState(-1);
   const [messages, setMessages] = useState<Message[]>([
     {
       text: INIT_PROMPT,
@@ -69,6 +74,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const addMessage = async (text: string) => {
+    setSending(true);
     const userMessage: Message = { text, isUser: true, isLoading: false };
     const tempMessage: Message = { text: "", isUser: false, isLoading: true };
     setMessages([...messages, userMessage, tempMessage]);
@@ -79,11 +85,12 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
       isLoading: false,
     };
     setMessages([...messages, userMessage, chatMessage]);
+    setSending(false);
   };
 
   const contextValue = useMemo(
-    () => ({ messages, addMessage }),
-    [messages, addMessage],
+    () => ({ messages, addMessage, sending, playing, setPlaying }),
+    [messages, playing],
   );
 
   return (

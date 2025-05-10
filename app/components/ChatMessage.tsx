@@ -1,16 +1,17 @@
-import React, { memo, useEffect, useState } from "react";
-import { cn } from "../utils/cn";
-import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
-import { Message } from "../utils/messageContext";
+import React, { memo, useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import { AudioLines, StopCircle } from "lucide-react";
+import { cn } from "../utils/cn";
+import { Message, useMessage } from "../utils/messageContext";
+import { useConfig } from "../utils/configContext";
 
 interface ChatMessageProps {
   message: Message;
+  index: number;
   latest: boolean;
-  audioPath: string | null;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => {
   const alignment = message.isUser ? "self-end" : "self-start";
   const roundLarge = message.isUser
     ? "-right-2 rounded-bl-xl"
@@ -20,27 +21,22 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest })
     : "-left-4 rounded-br-xl";
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
+  const AUDIO_PATH = index === 0 ? "/initial_message.wav" : null
 
-  // Index state: 0 = Base, 1 = Loading, 2 = Playing
-  const [index, setIndex] = useState(0);
-  const [audioUrl, setAudioUrl] = useState<string | null>(audioPath);
+  const { autoSpeak } = useConfig();
+  const { playing, setPlaying } = useMessage();
+  const [audioUrl, setAudioUrl] = useState<string | null>(AUDIO_PATH);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const playAudio = async () => {
     if (message && !message.isLoading && message.text.length > 0) {
       if (audioUrl) {
-        // Play cached fetched audio
-        setIndex(2);
+        // Play cached audio
         const audio = new Audio(audioUrl);
-        audio.play().catch((playError) => {
-          console.error("Error playing cached fetched audio:", playError);
-          setIndex(0);
-        });
-        audio.onended = () => {
-          setIndex(0);
-        };
+        audioRef.current = audio;
+        startAudio();
       } else {
         // Fetch new audio
-        setIndex(1);
         try {
           const response = await fetch("/api/kokoro", {
             method: "POST",
@@ -59,7 +55,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest })
             } catch (e) {
               errorDetails = response.statusText || errorDetails;
             }
-            setIndex(0);
             throw new Error(`Speech API Error: ${errorDetails}`);
           }
 
@@ -67,29 +62,47 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest })
           const newAudioUrl = URL.createObjectURL(audioBlob);
           setAudioUrl(newAudioUrl);
 
-          setIndex(2);
           const audio = new Audio(newAudioUrl);
-          audio.play().catch((playError) => {
-            console.error("Error playing fetched audio:", playError);
-            URL.revokeObjectURL(newAudioUrl);
-            setAudioUrl(null);
-            setIndex(0);
-          });
-
-          audio.onended = () => {
-            setIndex(0);
-          };
+          audioRef.current = audio;
+          startAudio();
         } catch (error) {
-          setIndex(0);
           console.error("Error fetching or playing speech:", error);
         }
       }
     }
   };
 
+  const startAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch((playError) => {
+        console.error("Error playing audio:", playError);
+        URL.revokeObjectURL(audioUrl ?? "");
+        setAudioUrl(null);
+        setPlaying(-1);
+      });
+      audioRef.current.onended = () => {
+        setPlaying(-1);
+      };
+    }
+    setPlaying(index);
+  }
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }
+
   useEffect(() => {
-    console.log("message loaded:", message)
-    if (!message.isUser && message.text && latest) {
+    if (playing !== index && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [playing]);
+
+  useEffect(() => {
+    if (!message.isUser && !message.isLoading && message.text && latest && autoSpeak) {
       playAudio();
     }
   }, [message, latest])
@@ -136,15 +149,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest })
         <button
           className={cn(
             "self-end p-2 rounded-full hover:bg-purple-200 transition-colors",
-            index > 0 ? "pointer-events-none" : "",
           )}
           type="button"
-          onClick={playAudio}
+          onClick={() => {
+            if (playing === index) {
+              stopAudio();
+              setPlaying(-1);
+            } else {
+              playAudio();
+            }
+          }}
         >
-          {index === 1 ? (
-            <Ellipsis className="text-purple-500" />
-          ) : index === 2 ? (
-            <Volume2Icon className="text-purple-500" />
+          {playing === index ? (
+            <StopCircle className="text-red-500" />
           ) : (
             <AudioLines className="text-purple-500" />
           )}
