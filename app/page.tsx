@@ -45,6 +45,7 @@ export default function Home() {
           <ChatMessage
             key={i}
             message={e}
+            latest={i === messages.length - 1}
             audioPath={i === 0 ? "/initial_message.wav" : null}
           />
         ))}

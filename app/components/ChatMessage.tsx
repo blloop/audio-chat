@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { cn } from "../utils/cn";
 import { AudioLines, Ellipsis, Volume2Icon } from "lucide-react";
 import { Message } from "../utils/messageContext";
@@ -6,10 +6,11 @@ import Image from "next/image";
 
 interface ChatMessageProps {
   message: Message;
+  latest: boolean;
   audioPath: string | null;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath, latest }) => {
   const alignment = message.isUser ? "self-end" : "self-start";
   const roundLarge = message.isUser
     ? "-right-2 rounded-bl-xl"
@@ -85,6 +86,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, audioPath }) => {
       }
     }
   };
+
+  useEffect(() => {
+    console.log("message loaded:", message)
+    if (!message.isUser && message.text && latest) {
+      playAudio();
+    }
+  }, [message, latest])
 
   return (
     <div className={cn("flex flex-wrap", alignment)}>
