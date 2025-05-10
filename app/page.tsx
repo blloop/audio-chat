@@ -7,6 +7,7 @@ import { useConfig } from "./utils/configContext";
 import AudioInput from "./components/AudioInput";
 import MessageInput from "./components/MessageInput";
 import ChatMessage from "./components/ChatMessage";
+import Header from "./components/Header";
 
 export default function Home() {
   const { messages, addMessage } = useMessage();
@@ -28,25 +29,23 @@ export default function Home() {
     }
   }, [listening, transcript]);
 
-  const handleMessage = () => {
+  const handleMessage = async () => {
     setInput("");
     addMessage(input);
   };
 
   return (
     <div className="flex flex-col h-screen font-sans bg-white">
-      <div className="flex justify-center w-full p-4 pb-2 text-black border-b-2 border-gray-200 bg-gray-100">
-        <p className="text-2xl font-semibold text-gray-500">AudioChat</p>
-      </div>
+      <Header />
       {/* Message list area */}
       <div className="flex flex-col flex-grow overflow-y-auto px-4 space-y-4">
         <div className="flex-1"></div>
         {messages.map((e, i) => (
           <ChatMessage
             key={i}
+            index={i}
             message={e}
             latest={i === messages.length - 1}
-            audioPath={i === 0 ? "/initial_message.wav" : null}
           />
         ))}
         <div ref={messageRef} />

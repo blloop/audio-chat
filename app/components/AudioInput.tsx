@@ -3,7 +3,7 @@ import { cn } from "../utils/cn";
 import { CircleStop, Mic } from "lucide-react";
 import { useConfig } from "../utils/configContext";
 
-export default function AudioInput() {
+const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput } = useSpeech();
   const { autoSend, setAutoSend, autoSpeak, setAutoSpeak } = useConfig();
 
@@ -62,3 +62,5 @@ export default function AudioInput() {
     </div>
   );
 }
+
+export default AudioInput;
