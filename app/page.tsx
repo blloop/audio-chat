@@ -38,7 +38,7 @@ export default function Home() {
     <div className="flex flex-col h-screen font-sans bg-white">
       <Header />
       {/* Message list area */}
-      <div className="flex flex-col flex-grow overflow-y-auto px-4 space-y-4">
+      <div className="flex flex-col flex-grow overflow-y-auto overflow-x-hidden px-4 space-y-4">
         <div className="flex-1"></div>
         {messages.map((e, i) => (
           <ChatMessage

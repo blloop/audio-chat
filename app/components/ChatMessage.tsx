@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { AudioLines, StopCircle } from "lucide-react";
+import { AudioLines, Ellipsis, StopCircle } from "lucide-react";
 import { cn } from "../utils/cn";
-import { Message, useMessage } from "../utils/messageContext";
+import { Message, useMessage, MessageType } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
 
 interface ChatMessageProps {
@@ -11,7 +11,25 @@ interface ChatMessageProps {
   latest: boolean;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => {
+const specialText: { [key in MessageType]: string | null } = {
+  [MessageType.normal]: null,
+  [MessageType.init]: "Hello! How can I help you today?",
+  [MessageType.limit]: null,
+  [MessageType.fetch]: null,
+};
+
+const specialAudio: { [key in MessageType]: string | null } = {
+  [MessageType.normal]: null,
+  [MessageType.init]: "/initial_message.wav",
+  [MessageType.limit]: null,
+  [MessageType.fetch]: null,
+};
+
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  message,
+  index,
+  latest,
+}) => {
   const alignment = message.isUser ? "self-end" : "self-start";
   const roundLarge = message.isUser
     ? "-right-2 rounded-bl-xl"
@@ -21,58 +39,55 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
     : "-left-4 rounded-br-xl";
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
-  const AUDIO_PATH = index === 0 ? "/initial_message.wav" : null
 
   const { autoSpeak } = useConfig();
   const { playing, setPlaying } = useMessage();
-  const [audioUrl, setAudioUrl] = useState<string | null>(AUDIO_PATH);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
 
   const playAudio = async () => {
-    if (message && !message.isLoading && message.text.length > 0) {
-      if (audioUrl) {
-        // Play cached audio
-        const audio = new Audio(audioUrl);
+    if (audioRef.current) {
+      // Play cached audio
+      startAudio();
+    } else if (specialAudio[message.type]) {
+      // Play hard-coded
+      if (!audioRef.current) {
+        audioRef.current = new Audio(specialAudio[message.type] as string);
+      }
+      startAudio();
+    } else {
+      // Fetch new audio
+      setFetching(true);
+      try {
+        const response = await fetch("/api/kokoro", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: message.text }),
+        });
+
+        if (!response.ok) {
+          let errorDetails = `API request failed with status ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorDetails = errorData.details || errorData.error || errorDetails;
+          } catch (e) {
+            errorDetails = response.statusText || errorDetails;
+          }
+          throw new Error(`Speech API Error: ${errorDetails}`);
+        }
+
+        const audioBlob = await response.blob();
+        const newAudioUrl = URL.createObjectURL(audioBlob);
+
+        const audio = new Audio(newAudioUrl);
         audioRef.current = audio;
         startAudio();
-      } else {
-        // Fetch new audio
-        setFetching(true);
-        try {
-          const response = await fetch("/api/kokoro", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text: message.text }),
-          });
-
-          if (!response.ok) {
-            let errorDetails = `API request failed with status ${response.status}`;
-            try {
-              const errorData = await response.json();
-              errorDetails =
-                errorData.details || errorData.error || errorDetails;
-            } catch (e) {
-              errorDetails = response.statusText || errorDetails;
-            }
-            throw new Error(`Speech API Error: ${errorDetails}`);
-          }
-
-          const audioBlob = await response.blob();
-          const newAudioUrl = URL.createObjectURL(audioBlob);
-          setAudioUrl(newAudioUrl);
-          setFetching(false);
-
-          const audio = new Audio(newAudioUrl);
-          audioRef.current = audio;
-          startAudio();
-        } catch (error) {
-          console.error("Error fetching or playing speech:", error);
-          setFetching(false);
-        }
+      } catch (error) {
+        console.error("Error fetching audio:", error);
       }
+      setFetching(false);
     }
   };
 
@@ -80,8 +95,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
     if (audioRef.current) {
       audioRef.current.play().catch((playError) => {
         console.error("Error playing audio:", playError);
-        URL.revokeObjectURL(audioUrl ?? "");
-        setAudioUrl(null);
+        URL.revokeObjectURL(audioRef.current?.src ?? "");
         setPlaying(-1);
       });
       audioRef.current.onended = () => {
@@ -89,14 +103,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
       };
     }
     setPlaying(index);
-  }
+  };
 
   const stopAudio = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }
+  };
 
   useEffect(() => {
     if (playing !== index && audioRef.current) {
@@ -106,10 +120,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
   }, [playing]);
 
   useEffect(() => {
-    if (!message.isUser && !message.isLoading && message.text && latest && autoSpeak) {
+    if (autoSpeak && latest && !message.isUser && !message.isLoading) {
       playAudio();
     }
-  }, [message, latest])
+  }, [message, latest]);
 
   return (
     <div className={cn("flex flex-wrap", alignment)}>
@@ -130,7 +144,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, latest }) => 
               src="/loading.svg"
             />
           ) : (
-            message.text
+            specialText[message.type] || message.text
           )}
         </span>
         <div

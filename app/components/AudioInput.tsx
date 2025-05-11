@@ -61,6 +61,6 @@ const AudioInput: React.FC = () => {
       </button>
     </div>
   );
-}
+};
 
 export default AudioInput;

@@ -3,7 +3,7 @@ import { useSpeech } from "../utils/speechContext";
 import { useMessage } from "../utils/messageContext";
 
 interface MessageInputProps {
-  handleMessage: () => void
+  handleMessage: () => void;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
@@ -14,9 +14,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
     <div className="flex gap-2">
       <input
         type="text"
-        placeholder={
-          listening ? "Recording..." : "Type your input here..."
-        }
+        placeholder={listening ? "Recording..." : "Type your input here..."}
         disabled={listening || sending}
         value={input}
         onChange={(e) => {
@@ -34,6 +32,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
       </button>
     </div>
   );
-}
+};
 
 export default MessageInput;

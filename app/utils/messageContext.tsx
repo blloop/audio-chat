@@ -2,10 +2,18 @@
 
 import React, { createContext, useState, useContext, useMemo } from "react";
 
+export enum MessageType {
+  normal,
+  init,
+  limit,
+  fetch,
+}
+
 export type Message = {
   text: string;
   isUser: boolean;
   isLoading: boolean;
+  type: MessageType;
 };
 
 interface MessageContextType {
@@ -29,15 +37,14 @@ export const useMessage = () => {
 export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const INIT_PROMPT = "Hello! How can I help you today?";
-
   const [sending, setSending] = useState(false);
   const [playing, setPlaying] = useState(-1);
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: INIT_PROMPT,
+      text: "",
       isUser: false,
       isLoading: false,
+      type: MessageType.init,
     },
   ]);
 
@@ -51,7 +58,13 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      return {
+        text: "",
+        isUser: false,
+        isLoading: false,
+        type: response.status === 429 ? MessageType.limit : MessageType.fetch,
+      };
+      // throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const reader = response.body?.getReader();
@@ -70,22 +83,33 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
       result += decoder.decode(value);
     }
 
-    return result;
+    return {
+      text: result,
+      isUser: false,
+      isLoading: false,
+      type: MessageType.normal,
+    };
   }
 
   const addMessage = async (text: string) => {
-    const userMessage: Message = { text, isUser: true, isLoading: false };
-    const tempMessage: Message = { text: "", isUser: false, isLoading: true };
+    const userMessage: Message = {
+      text,
+      isUser: true,
+      isLoading: false,
+      type: MessageType.normal,
+    };
+    const tempMessage: Message = {
+      text: "",
+      isUser: false,
+      isLoading: true,
+      type: MessageType.normal,
+    };
     setSending(true);
     setMessages([...messages, userMessage, tempMessage]);
-    const output = await generateText(text);
-    const chatMessage: Message = {
-      text: output,
-      isUser: false,
-      isLoading: false,
-    };
-    setMessages([...messages, userMessage, chatMessage]);
+
+    const chatMessage = await generateText(text);
     setSending(false);
+    setMessages([...messages, userMessage, chatMessage]);
   };
 
   const contextValue = useMemo(
