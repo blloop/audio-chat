@@ -1,9 +1,13 @@
 import Replicate from "replicate";
+import { redis } from "../../../redis";
 
 // Initialize the Replicate client
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN!,
 });
+
+const MAX_REQUESTS = 64;
+const SECONDS_IN_DAY = 86400;
 
 // Helper function to convert async iterator to ReadableStream
 function iteratorToStream(iterator: AsyncIterable<string>) {
@@ -21,6 +25,24 @@ function iteratorToStream(iterator: AsyncIterable<string>) {
 
 export async function POST(req: Request) {
   try {
+    let ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || "unknown";
+
+    if (!ip) {
+      console.error("Could not determine IP address");
+      return new Response("Could not determine IP address", { status: 500 });
+    }
+
+    const key = `llama3_rate_limit:${ip}`;
+    const current = await redis.incr(key);
+
+    if (current === 1) {
+      await redis.expire(key, SECONDS_IN_DAY);
+    }
+
+    if (current > MAX_REQUESTS) {
+      return new Response("Too many requests", { status: 429 });
+    }
+
     const { prompt } = await req.json();
 
     if (!prompt) {
