@@ -12,7 +12,7 @@ const kokoroId =
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, voice = "af_jessica" } = await req.json();
+    const { text, voice = "af_bella" } = await req.json();
 
     if (!text) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
@@ -26,10 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const input = { text: text, voice: voice };
-
     // Call the Replicate API
-    const output = await replicate.run(kokoroId, { input });
+    const output = await replicate.run(kokoroId, { input: { text, voice } });
 
     // Check if the output is a ReadableStream
     if (output instanceof ReadableStream) {
