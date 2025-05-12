@@ -26,7 +26,7 @@ export default function Home() {
   }, [messages]);
 
   useEffect(() => {
-  if (!listening && transcript && (!isText || autoSend)) {
+    if (!listening && transcript && (!isText || autoSend)) {
       handleMessage();
     }
   }, [listening, transcript]);
@@ -41,9 +41,12 @@ export default function Home() {
       <Header />
 
       {/* Message list area */}
-      <div className={cn("flex flex-col flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-4",
-        !isText && "hidden"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-4",
+          !isText && "hidden",
+        )}
+      >
         <div className="flex-1"></div>
         {messages.map((e, i) => (
           <ChatMessage
@@ -56,22 +59,27 @@ export default function Home() {
         <div ref={messageRef} />
       </div>
       {/* Bottom input area */}
-      <div className={cn("flex flex-col gap-2 p-4 border-t border-gray-200 bg-gray-100",
-        !isText && "hidden"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col gap-2 p-4 border-t border-gray-200 bg-gray-100",
+          !isText && "hidden",
+        )}
+      >
         <MessageInput handleMessage={handleMessage} />
         <AudioInput />
       </div>
 
       {/* Microphone button area */}
-      <div className={cn("flex flex-col flex-1 gap-4 items-center justify-center",
-        isText && "hidden"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col flex-1 gap-4 items-center justify-center",
+          isText && "hidden",
+        )}
+      >
         <AudioOnly />
       </div>
       {/* Bottom description area */}
-      <div className={cn("flex flex-col h-16", isText && "hidden")}>
-      </div>
+      <div className={cn("flex flex-col h-16", isText && "hidden")}></div>
     </div>
   );
 }

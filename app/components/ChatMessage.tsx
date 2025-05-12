@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { AudioLines, Ellipsis, StopCircle } from "lucide-react";
 import { cn } from "../utils/cn";
-import { Message, useMessage, MessageType } from "../utils/messageContext";
+import { Message, useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
 
 interface ChatMessageProps {
@@ -11,20 +11,19 @@ interface ChatMessageProps {
   latest: boolean;
 }
 
-const specialText: { [key in MessageType]: string | null } = {
-  [MessageType.normal]: null,
-  [MessageType.init]: "Hello! How can I help you today?",
-  [MessageType.limit]:
+const specialText: { [key: string]: string | null } = {
+  normal: null,
+  init: "Hello! How can I help you today?",
+  limit:
     "You've reached your usage limit for this demo. Please try again later.",
-  [MessageType.fetch]:
-    "There was an error reaching the server. Please try again later.",
+  fetch: "There was an error reaching the server. Please try again later.",
 };
 
-const specialAudio: { [key in MessageType]: string | null } = {
-  [MessageType.normal]: null,
-  [MessageType.init]: "/init_message.wav",
-  [MessageType.limit]: "/limit_message.wav",
-  [MessageType.fetch]: "/fetch_message.wav",
+const specialAudio: { [key: string]: string | null } = {
+  normal: null,
+  init: "/init_message.wav",
+  limit: "/limit_message.wav",
+  fetch: "/fetch_message.wav",
 };
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -122,7 +121,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [playing]);
 
   useEffect(() => {
-    if ((!isText || autoSpeak) && latest && !message.isUser && !message.isLoading) {
+    if (
+      (!isText || autoSpeak) &&
+      latest &&
+      !message.isUser &&
+      !message.isLoading
+    ) {
       playAudio();
     }
   }, [message, latest]);

@@ -2,12 +2,7 @@
 
 import React, { createContext, useState, useContext, useMemo } from "react";
 
-export enum MessageType {
-  normal,
-  init,
-  limit,
-  fetch,
-}
+export type MessageType = "normal" | "init" | "limit" | "fetch";
 
 export type Message = {
   text: string;
@@ -44,11 +39,11 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
       text: "",
       isUser: false,
       isLoading: false,
-      type: MessageType.init,
+      type: "init",
     },
   ]);
 
-  async function generateText(prompt: string) {
+  const generateText = async (prompt: string): Promise<Message> => {
     const response = await fetch("/api/llama3", {
       method: "POST",
       headers: {
@@ -62,7 +57,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         text: "",
         isUser: false,
         isLoading: false,
-        type: response.status === 429 ? MessageType.limit : MessageType.fetch,
+        type: response.status === 429 ? "limit" : "fetch",
       };
       // throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -87,22 +82,22 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
       text: result,
       isUser: false,
       isLoading: false,
-      type: MessageType.normal,
+      type: "normal",
     };
-  }
+  };
 
   const addMessage = async (text: string) => {
     const userMessage: Message = {
       text,
       isUser: true,
       isLoading: false,
-      type: MessageType.normal,
+      type: "normal",
     };
     const tempMessage: Message = {
       text: "",
       isUser: false,
       isLoading: true,
-      type: MessageType.normal,
+      type: "normal",
     };
     setSending(true);
     setMessages([...messages, userMessage, tempMessage]);

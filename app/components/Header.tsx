@@ -6,12 +6,12 @@ import { useSpeech } from "../utils/speechContext";
 const Header: React.FC = () => {
   const { supported } = useSpeech();
   const { isText, toggleText } = useConfig();
-  
+
   return (
     <div className="flex justify-between w-full gap-2 p-4 text-black border-b-2 border-gray-200 bg-gray-100">
       <div className="w-20" />
       <p className="text-2xl font-semibold text-gray-500">AudioChat</p>
-      {supported ?
+      {supported ? (
         <div
           onClick={() => toggleText()}
           className="cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors border-gray-300 border-2 rounded-full relative flex w-18 gap-4 px-2 justify-end items-center"
@@ -26,9 +26,10 @@ const Header: React.FC = () => {
               isText ? "right-10" : "right-0",
             )}
           />
-        </div> :
+        </div>
+      ) : (
         <div className="w-20" />
-      }
+      )}
     </div>
   );
 };

@@ -20,19 +20,21 @@ const AudioOnly: React.FC = () => {
     <>
       <button
         type="button"
-        className={cn("size-48 bg-purple-400 transition-colors p-8 rounded-full",
-          listening ? "bg-purple-400" : "bg-gray-400 hover:bg-purple-400"
+        className={cn(
+          "size-48 bg-purple-400 transition-colors p-8 rounded-full",
+          listening ? "bg-purple-400" : "bg-gray-400 hover:bg-purple-400",
         )}
         onClick={audioButton}
       >
-        {listening ? 
-          <Mic className="font-thin size-full text-white" /> :
+        {listening ? (
+          <Mic className="font-thin size-full text-white" />
+        ) : (
           <Play className="font-thin size-full text-white" />
-        }
+        )}
       </button>
       <p className="text-black">Click to start a conversation!</p>
     </>
-  )
-}
+  );
+};
 
 export default AudioOnly;
