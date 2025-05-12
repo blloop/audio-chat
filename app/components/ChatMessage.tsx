@@ -42,7 +42,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
 
-  const { autoSpeak } = useConfig();
+  const { autoSpeak, isText } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
@@ -122,7 +122,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [playing]);
 
   useEffect(() => {
-    if (autoSpeak && latest && !message.isUser && !message.isLoading) {
+    if ((!isText || autoSpeak) && latest && !message.isUser && !message.isLoading) {
       playAudio();
     }
   }, [message, latest]);
