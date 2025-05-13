@@ -7,6 +7,8 @@ interface ConfigContextType {
   setAutoSend: (bool: boolean) => void;
   autoSpeak: boolean;
   setAutoSpeak: (bool: boolean) => void;
+  autoListen: boolean;
+  setAutoListen: (bool: boolean)  => void;
   isText: boolean;
   toggleText: () => void;
 }
@@ -16,6 +18,8 @@ const ConfigContext = createContext<ConfigContextType>({
   setAutoSend: () => {},
   autoSpeak: false,
   setAutoSpeak: () => {},
+  autoListen: false,
+  setAutoListen: () => {},
   isText: false,
   toggleText: () => {},
 });
@@ -23,6 +27,7 @@ const ConfigContext = createContext<ConfigContextType>({
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [autoSend, setAutoSend] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(false);
+  const [autoListen, setAutoListen] = useState(false);
   const [isText, setIsText] = useState(true);
 
   return (
@@ -32,6 +37,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
         setAutoSend,
         autoSpeak,
         setAutoSpeak,
+        autoListen,
+        setAutoListen,
         isText,
         toggleText: () => setIsText(!isText),
       }}

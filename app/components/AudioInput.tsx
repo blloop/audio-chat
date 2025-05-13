@@ -5,7 +5,7 @@ import { useConfig } from "../utils/configContext";
 
 const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput } = useSpeech();
-  const { autoSend, setAutoSend, autoSpeak, setAutoSpeak } = useConfig();
+  const { autoSend, setAutoSend, autoSpeak, setAutoSpeak, autoListen, setAutoListen } = useConfig();
 
   if (!supported) {
     return (
@@ -26,27 +26,43 @@ const AudioInput: React.FC = () => {
 
   return (
     <div className="flex flex-row-reverse flex-wrap gap-4 items-center justify-between">
-      <div className="px-2 flex gap-4 items-center">
-        <input
-          id="autoSend"
-          type="checkbox"
-          className="scale-[1.5]"
-          checked={autoSend}
-          onChange={(e) => setAutoSend(e.target.checked)}
-        />
-        <label className="text-black" htmlFor="autoSend">
-          Auto Send
-        </label>
-        <input
-          id="autoPlay"
-          type="checkbox"
-          className="scale-[1.5]"
-          checked={autoSpeak}
-          onChange={(e) => setAutoSpeak(e.target.checked)}
-        />
-        <label className="text-black" htmlFor="autoPlay">
-          Autoplay
-        </label>
+      <div className="px-2 flex flex-wrap gap-4 items-center">
+        <div className="flex gap-2">
+          <input
+            id="autoListen"
+            type="checkbox"
+            className="scale-[1.5]"
+            checked={autoListen}
+            onChange={(e) => setAutoListen(e.target.checked)}
+          />
+          <label className="text-black" htmlFor="autoListen">
+            Auto Listen
+          </label>
+        </div>
+        <div className="flex gap-2">
+          <input
+            id="autoSend"
+            type="checkbox"
+            className="scale-[1.5]"
+            checked={autoSend}
+            onChange={(e) => setAutoSend(e.target.checked)}
+          />
+          <label className="text-black" htmlFor="autoSend">
+            Auto Send
+          </label>
+        </div>
+        <div className="flex gap-2">
+          <input
+            id="autoPlay"
+            type="checkbox"
+            className="scale-[1.5]"
+            checked={autoSpeak}
+            onChange={(e) => setAutoSpeak(e.target.checked)}
+          />
+          <label className="text-black" htmlFor="autoPlay">
+            Autoplay
+          </label>
+        </div>
       </div>
       <button
         type="button"

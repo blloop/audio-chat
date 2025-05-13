@@ -5,12 +5,6 @@ import { cn } from "../utils/cn";
 import { Message, useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
 
-interface ChatMessageProps {
-  message: Message;
-  index: number;
-  latest: boolean;
-}
-
 const specialText: { [key: string]: string | null } = {
   normal: null,
   init: "Hello! How can I help you today?",
@@ -26,9 +20,15 @@ const specialAudio: { [key: string]: string | null } = {
   fetch: "/fetch_message.wav",
 };
 
+interface ChatMessageProps {
+  index: number;
+  message: Message;
+  latest: boolean;
+}
+
 const ChatMessage: React.FC<ChatMessageProps> = ({
-  message,
   index,
+  message,
   latest,
 }) => {
   const alignment = message.isUser ? "self-end" : "self-start";

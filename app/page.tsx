@@ -13,8 +13,8 @@ import AudioOnly from "./components/AudioOnly";
 
 export default function Home() {
   const { messages, addMessage } = useMessage();
-  const { transcript, listening, input, setInput } = useSpeech();
-  const { autoSend, isText } = useConfig();
+  const { transcript, listen, listening, input, setInput } = useSpeech();
+  const { autoSend, autoListen, isText } = useConfig();
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -30,6 +30,13 @@ export default function Home() {
       handleMessage();
     }
   }, [listening, transcript]);
+
+  useEffect(() => {
+    if (autoListen && playing === -1) {
+      setInput("");
+      listen();
+    }
+  }, [playing])
 
   const handleMessage = async () => {
     setInput("");
