@@ -5,7 +5,14 @@ import { useConfig } from "../utils/configContext";
 
 const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput } = useSpeech();
-  const { autoSend, setAutoSend, autoSpeak, setAutoSpeak, autoListen, setAutoListen } = useConfig();
+  const {
+    autoSend,
+    setAutoSend,
+    autoSpeak,
+    setAutoSpeak,
+    autoListen,
+    setAutoListen,
+  } = useConfig();
 
   if (!supported) {
     return (

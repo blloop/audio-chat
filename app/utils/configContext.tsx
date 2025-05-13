@@ -8,7 +8,7 @@ interface ConfigContextType {
   autoSpeak: boolean;
   setAutoSpeak: (bool: boolean) => void;
   autoListen: boolean;
-  setAutoListen: (bool: boolean)  => void;
+  setAutoListen: (bool: boolean) => void;
   isText: boolean;
   toggleText: () => void;
 }

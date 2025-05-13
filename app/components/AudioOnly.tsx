@@ -1,18 +1,97 @@
-import { Mic, Play } from "lucide-react";
+import { Mic, Play, Square } from "lucide-react";
 import { useSpeech } from "../utils/speechContext";
 import { useMessage } from "../utils/messageContext";
 import { cn } from "../utils/cn";
+import { useEffect, useState } from "react";
+import { useConfig } from "../utils/configContext";
+import Image from "next/image";
+
+const stateText = {
+  init: "Click to start a conversation!",
+  listening: "Listening...",
+  loading: "Loading, please wait...",
+  speaking: "Speaking...",
+};
 
 const AudioOnly: React.FC = () => {
-  const { listen, listening, setInput } = useSpeech();
-  const { setPlaying } = useMessage();
+  const { transcript, listen, listening, setInput } = useSpeech();
+  const { messages, playing, setPlaying } = useMessage();
+  const { autoSend, isText } = useConfig();
+  const [currState, setCurrState] = useState<keyof typeof stateText>("init");
+  const [initAudio, setInitAudio] = useState<HTMLAudioElement | null>(null);
 
-  const audioButton = () => {
-    if (listening) {
+  useEffect(() => {
+    setInitAudio(new Audio("/init_message.wav"));
+  }, []);
+
+  useEffect(() => {
+    if (playing !== -1) {
+      setCurrState("speaking");
+    }
+  }, [playing]);
+
+  useEffect(() => {
+    if (!listening) {
+      if ((!isText || autoSend) && !listening && transcript) {
+        setCurrState("loading");
+      } else {
+        setCurrState("init");
+      }
+    } else {
+      setCurrState("listening");
+    }
+  }, [listening]);
+
+  const mainButton = () => {
+    if (messages.length === 1) {
+      startAudio();
+    } else if (playing !== -1) {
+      // TODO: Fix audio not stopping issue
+      // call stop() from useSpeech() here
       setPlaying(-1);
+      setCurrState("init");
     } else {
       setInput("");
       listen();
+      setCurrState("listening");
+    }
+  };
+
+  const startAudio = () => {
+    if (initAudio) {
+      initAudio?.play().catch((playError) => {
+        console.error("Error playing audio:", playError);
+        URL.revokeObjectURL(initAudio?.src ?? "");
+        setPlaying(-1);
+      });
+      initAudio.onended = () => {
+        setPlaying(-1);
+      };
+      setPlaying(0);
+      setCurrState("speaking");
+    }
+  };
+
+  const logoClass = "font-thin size-full text-white";
+
+  const renderLogo = () => {
+    switch (currState) {
+      case "init":
+        return <Play className={logoClass} />;
+      case "listening":
+        return <Mic className={logoClass} />;
+      case "speaking":
+        return <Square className={logoClass} />;
+      default:
+        return (
+          <Image
+            className="fill-white size-full object-cover"
+            width={240}
+            height={96}
+            alt="Response is loading."
+            src="/loading.svg"
+          />
+        );
     }
   };
 
@@ -22,17 +101,16 @@ const AudioOnly: React.FC = () => {
         type="button"
         className={cn(
           "size-48 bg-purple-400 transition-colors p-8 rounded-full",
-          listening ? "bg-purple-400" : "bg-gray-400 hover:bg-purple-400",
+          listening || (currState === "loading" && "pointer-events-none"),
+          listening
+            ? "bg-purple-400 pointer-events-none"
+            : "bg-zinc-300 hover:bg-purple-400",
         )}
-        onClick={audioButton}
+        onClick={mainButton}
       >
-        {listening ? (
-          <Mic className="font-thin size-full text-white" />
-        ) : (
-          <Play className="font-thin size-full text-white" />
-        )}
+        {renderLogo()}
       </button>
-      <p className="text-black">Click to start a conversation!</p>
+      <p className="text-black">{stateText[currState]}</p>
     </>
   );
 };

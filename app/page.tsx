@@ -12,7 +12,7 @@ import Header from "./components/Header";
 import AudioOnly from "./components/AudioOnly";
 
 export default function Home() {
-  const { messages, addMessage } = useMessage();
+  const { playing, messages, addMessage } = useMessage();
   const { transcript, listen, listening, input, setInput } = useSpeech();
   const { autoSend, autoListen, isText } = useConfig();
   const messageRef = useRef<HTMLDivElement | null>(null);
@@ -26,17 +26,17 @@ export default function Home() {
   }, [messages]);
 
   useEffect(() => {
-    if (!listening && transcript && (!isText || autoSend)) {
+    if ((!isText || autoSend) && !listening && transcript) {
       handleMessage();
     }
   }, [listening, transcript]);
 
   useEffect(() => {
-    if (autoListen && playing === -1) {
+    if ((!isText || autoListen) && playing === -1) {
       setInput("");
       listen();
     }
-  }, [playing])
+  }, [playing]);
 
   const handleMessage = async () => {
     setInput("");
