@@ -13,13 +13,6 @@ const specialText: { [key: string]: string | null } = {
   fetch: "There was an error reaching the server. Please try again later.",
 };
 
-const specialAudio: { [key: string]: string | null } = {
-  normal: null,
-  init: "/init_message.wav",
-  limit: "/limit_message.wav",
-  fetch: "/fetch_message.wav",
-};
-
 interface ChatMessageProps {
   index: number;
   message: Message;
@@ -41,7 +34,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
 
-  const { autoSpeak, isText } = useConfig();
+  const { autoSpeak, isText, voice } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
@@ -50,10 +43,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     if (audioRef.current) {
       // Play cached audio
       startAudio();
-    } else if (specialAudio[message.type]) {
+    } else if (message.type !== "normal") {
       // Play hard-coded
       if (!audioRef.current) {
-        audioRef.current = new Audio(specialAudio[message.type] as string);
+        audioRef.current = new Audio(`/${voice}_${message.type}.wav`);
       }
       startAudio();
     } else {
@@ -65,7 +58,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: message.text }),
+          body: JSON.stringify({ text: message.text, voice }),
         });
 
         if (!response.ok) {
