@@ -5,14 +5,7 @@ import { useConfig } from "../utils/configContext";
 
 const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput } = useSpeech();
-  const {
-    autoSend,
-    setAutoSend,
-    autoSpeak,
-    setAutoSpeak,
-    autoListen,
-    setAutoListen,
-  } = useConfig();
+  const { autoSend, setAutoSend, autoSpeak, setAutoSpeak } = useConfig();
 
   if (!supported) {
     return (
@@ -34,18 +27,6 @@ const AudioInput: React.FC = () => {
   return (
     <div className="flex flex-row-reverse flex-wrap gap-4 items-center justify-between">
       <div className="px-2 flex flex-wrap gap-4 items-center">
-        <div className="flex gap-2">
-          <input
-            id="autoListen"
-            type="checkbox"
-            className="scale-[1.5]"
-            checked={autoListen}
-            onChange={(e) => setAutoListen(e.target.checked)}
-          />
-          <label className="text-black" htmlFor="autoListen">
-            Auto Listen
-          </label>
-        </div>
         <div className="flex gap-2">
           <input
             id="autoSend"
@@ -75,12 +56,14 @@ const AudioInput: React.FC = () => {
         type="button"
         onClick={audioButton}
         className={cn(
-          "flex shrink-0 text-black bg-gray-300 hover:bg-gray-400 p-2 px-3 rounded-full transition-colors",
-          listening && "bg-purple-300 hover:bg-purple-300",
+          "flex shrink-0 text-black border-2 border-gray-300 bg-gray-300 hover:bg-gray-200 p-2 px-3 rounded-full transition-colors",
+          listening && "border-purple-300 bg-purple-200 hover:bg-purple-300",
         )}
       >
         {listening ? <CircleStop /> : <Mic />}
-        <span className="text-black ml-2">Mic Input</span>
+        <span className="text-black ml-2">
+          {listening ? "Stop Input" : "Mic Input"}
+        </span>
       </button>
     </div>
   );
