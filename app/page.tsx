@@ -8,8 +8,9 @@ import { useConfig } from "./utils/configContext";
 import AudioInput from "./components/AudioInput";
 import MessageInput from "./components/MessageInput";
 import ChatMessage from "./components/ChatMessage";
-import Header from "./components/Header";
 import AudioOnly from "./components/AudioOnly";
+import HeaderVoice from "./components/HeaderVoice";
+import HeaderToggle from "./components/HeaderToggle";
 
 export default function Home() {
   const { playing, messages, addMessage } = useMessage();
@@ -45,7 +46,12 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen font-sans bg-white">
-      <Header />
+      {/* Header area */}
+      <div className="flex justify-between w-full gap-2 p-4 text-black border-b-2 border-gray-200 bg-gray-100">
+        <HeaderVoice />
+        <p className="text-2xl font-semibold text-gray-500">AudioChat</p>
+        <HeaderToggle />
+      </div>
 
       {/* Message list area */}
       <div
