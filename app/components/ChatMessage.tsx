@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useRef } from "react";
+import React, { memo, useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { AudioLines, Ellipsis, StopCircle } from "lucide-react";
 import { cn } from "../utils/cn";
@@ -39,7 +39,28 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
 
-  const playAudio = async () => {
+  const startAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.play().catch((playError) => {
+        console.error("Error playing audio:", playError);
+        URL.revokeObjectURL(audioRef.current?.src ?? "");
+        setPlaying(-1);
+      });
+      audioRef.current.onended = () => {
+        setPlaying(-1);
+      };
+    }
+    setPlaying(index);
+  }, [index, setPlaying]);
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  const playAudio = useCallback(async () => {
     if (audioRef.current) {
       // Play cached audio
       startAudio();
@@ -66,7 +87,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           try {
             const errorData = await response.json();
             errorDetails = errorData.details || errorData.error || errorDetails;
-          } catch (e) {
+          } catch {
             errorDetails = response.statusText || errorDetails;
           }
           throw new Error(`Speech API Error: ${errorDetails}`);
@@ -83,28 +104,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       }
       setFetching(false);
     }
-  };
-
-  const startAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch((playError) => {
-        console.error("Error playing audio:", playError);
-        URL.revokeObjectURL(audioRef.current?.src ?? "");
-        setPlaying(-1);
-      });
-      audioRef.current.onended = () => {
-        setPlaying(-1);
-      };
-    }
-    setPlaying(index);
-  };
-
-  const stopAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  };
+  }, [message.text, message.type, startAudio, voice]);
 
   useEffect(() => {
     if (playing === index) {
@@ -114,7 +114,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, [playing]);
+  }, [playing, index, playAudio]);
 
   useEffect(() => {
     if (
@@ -125,7 +125,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     ) {
       playAudio();
     }
-  }, [message, latest]);
+  }, [message, latest, autoSpeak, isText, playAudio]);
 
   return (
     <div className={cn("flex flex-wrap", alignment)}>

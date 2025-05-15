@@ -25,7 +25,7 @@ const AudioOnly: React.FC = () => {
     } else if (isText) {
       setCurrState("init");
     }
-  }, [playing]);
+  }, [playing, isText]);
 
   useEffect(() => {
     if (!listening) {
@@ -37,7 +37,7 @@ const AudioOnly: React.FC = () => {
     } else {
       setCurrState("listening");
     }
-  }, [listening]);
+  }, [listening, autoSend, isText, transcript]);
 
   const mainButton = () => {
     if (messages.length === 1) {

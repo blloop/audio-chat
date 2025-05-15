@@ -16,7 +16,10 @@ const kokoroId =
 
 export async function POST(req: NextRequest) {
   try {
-    let ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || "unknown";
+    const ip =
+      req.headers.get("x-real-ip") ||
+      req.headers.get("x-forwarded-for") ||
+      "unknown";
 
     if (!ip) {
       console.error("Could not determine IP address");

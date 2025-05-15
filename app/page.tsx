@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { cn } from "./utils/cn";
 import { useSpeech } from "./utils/speechContext";
 import { useMessage } from "./utils/messageContext";
@@ -18,9 +18,14 @@ export default function Home() {
   const { autoSend, autoListen, isText } = useConfig();
   const messageRef = useRef<HTMLDivElement | null>(null);
 
+  const handleMessage = useCallback(async () => {
+    setInput("");
+    addMessage(input);
+  }, [addMessage, input, setInput]);
+
   useEffect(() => {
     setInput(transcript);
-  }, [transcript]);
+  }, [transcript, setInput]);
 
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,19 +35,23 @@ export default function Home() {
     if ((!isText || autoSend) && !listening && transcript) {
       handleMessage();
     }
-  }, [listening, transcript]);
+  }, [
+    listening,
+    transcript,
+    autoListen,
+    isText,
+    listen,
+    setInput,
+    autoSend,
+    handleMessage,
+  ]);
 
   useEffect(() => {
     if ((!isText || autoListen) && playing === -1) {
       setInput("");
       listen();
     }
-  }, [playing]);
-
-  const handleMessage = async () => {
-    setInput("");
-    addMessage(input);
-  };
+  }, [playing, isText, autoListen, setInput, listen]);
 
   return (
     <div className="flex flex-col h-screen font-sans bg-white">

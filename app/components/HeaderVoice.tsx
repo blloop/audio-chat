@@ -1,9 +1,14 @@
 import { ChevronDown, ChevronUp, Mars, Speech, Venus } from "lucide-react";
 import { useSpeech } from "../utils/speechContext";
 import { useState } from "react";
-import { useConfig } from "../utils/configContext";
+import { useConfig, VoiceType } from "../utils/configContext";
 
-const voiceList = ["af_bella", "af_jessica", "am_fenrir", "am_michael"];
+const voiceList: VoiceType[] = [
+  "af_bella",
+  "af_jessica",
+  "am_fenrir",
+  "am_michael",
+];
 
 export default function HeaderVoice() {
   const { supported } = useSpeech();
@@ -26,8 +31,8 @@ export default function HeaderVoice() {
     return `${v.split("_")[1].slice(0, 1).toUpperCase()}${v.split("_")[1].slice(1)}`;
   };
 
-  const selectName = (v: string) => {
-    setVoice(v as any);
+  const selectName = (v: VoiceType) => {
+    setVoice(v);
     setOpen(false);
   };
 

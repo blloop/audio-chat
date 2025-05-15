@@ -2,14 +2,13 @@
 
 import SpeechRecognition, {
   useSpeechRecognition,
-  // @ts-ignore
 } from "react-speech-recognition";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface SpeechContextType {
   transcript: string;
   listening: boolean;
-  reset: any;
+  reset: () => void;
   listen: () => void;
   stop: () => void;
   speak: (text: string) => void;

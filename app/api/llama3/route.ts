@@ -1,4 +1,4 @@
-import Replicate from "replicate";
+import Replicate, { ServerSentEvent } from "replicate";
 import { redis } from "../../../redis";
 
 // Initialize the Replicate client
@@ -23,9 +23,20 @@ function iteratorToStream(iterator: AsyncIterable<string>) {
   });
 }
 
+async function* mapToStrings(
+  source: AsyncGenerator<ServerSentEvent>,
+): AsyncGenerator<string> {
+  for await (const event of source) {
+    yield event.data;
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    let ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || "unknown";
+    const ip =
+      req.headers.get("x-real-ip") ||
+      req.headers.get("x-forwarded-for") ||
+      "unknown";
 
     if (!ip) {
       console.error("Could not determine IP address");
@@ -54,7 +65,7 @@ export async function POST(req: Request) {
     });
 
     // Convert the async iterator to a ReadableStream
-    const readableStream = iteratorToStream(streamIterator as any);
+    const readableStream = iteratorToStream(mapToStrings(streamIterator));
 
     // Return a standard Response object with the stream
     return new Response(readableStream, {
