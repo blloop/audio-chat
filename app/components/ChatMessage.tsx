@@ -107,6 +107,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   useEffect(() => {
+    if (playing === index) {
+      playAudio();
+    }
     if (playing !== index && audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;

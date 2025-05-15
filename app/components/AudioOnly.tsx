@@ -18,15 +18,12 @@ const AudioOnly: React.FC = () => {
   const { messages, playing, setPlaying } = useMessage();
   const { autoSend, isText } = useConfig();
   const [currState, setCurrState] = useState<keyof typeof stateText>("init");
-  const [initAudio, setInitAudio] = useState<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    setInitAudio(new Audio("/init_message.wav"));
-  }, []);
 
   useEffect(() => {
     if (playing !== -1) {
       setCurrState("speaking");
+    } else if (isText) {
+      setCurrState("init");
     }
   }, [playing]);
 
@@ -44,7 +41,7 @@ const AudioOnly: React.FC = () => {
 
   const mainButton = () => {
     if (messages.length === 1) {
-      startAudio();
+      setPlaying(0);
     } else if (playing !== -1) {
       // TODO: Fix audio not stopping issue
       // call stop() from useSpeech() here
@@ -54,21 +51,6 @@ const AudioOnly: React.FC = () => {
       setInput("");
       listen();
       setCurrState("listening");
-    }
-  };
-
-  const startAudio = () => {
-    if (initAudio) {
-      initAudio?.play().catch((playError) => {
-        console.error("Error playing audio:", playError);
-        URL.revokeObjectURL(initAudio?.src ?? "");
-        setPlaying(-1);
-      });
-      initAudio.onended = () => {
-        setPlaying(-1);
-      };
-      setPlaying(0);
-      setCurrState("speaking");
     }
   };
 

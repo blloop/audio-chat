@@ -2,13 +2,11 @@
 
 import React, { createContext, useState, useContext, useMemo } from "react";
 
-export type MessageType = "normal" | "init" | "limit" | "fetch";
-
 export type Message = {
   text: string;
   isUser: boolean;
   isLoading: boolean;
-  type: MessageType;
+  type: "normal" | "init" | "limit" | "fetch";
 };
 
 interface MessageContextType {

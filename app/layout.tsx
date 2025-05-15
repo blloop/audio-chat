@@ -17,11 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="relative antialiased mx-auto max-w-xl">
-        <SpeechProvider>
-          <ConfigProvider>
+        <ConfigProvider>
+          <SpeechProvider>
             <MessageProvider>{children}</MessageProvider>
-          </ConfigProvider>
-        </SpeechProvider>
+          </SpeechProvider>
+        </ConfigProvider>
       </body>
     </html>
   );

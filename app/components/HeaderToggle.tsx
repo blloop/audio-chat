@@ -8,9 +8,7 @@ export default function HeaderToggle() {
   const { isText, toggleText } = useConfig();
 
   if (!supported) {
-    return (
-      <div className="w-20" />
-    )
+    return <div className="w-20" />;
   }
 
   return (
@@ -29,5 +27,5 @@ export default function HeaderToggle() {
         )}
       />
     </div>
-  )
+  );
 }
