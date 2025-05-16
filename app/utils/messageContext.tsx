@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useContext, useMemo } from "react";
 
 export type Message = {
   text: string;
@@ -90,33 +84,30 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   };
 
-  const addMessage = useCallback(
-    async (text: string) => {
-      const userMessage: Message = {
-        text,
-        isUser: true,
-        isLoading: false,
-        type: "normal",
-      };
-      const tempMessage: Message = {
-        text: "",
-        isUser: false,
-        isLoading: true,
-        type: "normal",
-      };
-      setSending(true);
-      setMessages([...messages, userMessage, tempMessage]);
+  const addMessage = async (text: string) => {
+    const userMessage: Message = {
+      text,
+      isUser: true,
+      isLoading: false,
+      type: "normal",
+    };
+    const tempMessage: Message = {
+      text: "",
+      isUser: false,
+      isLoading: true,
+      type: "normal",
+    };
+    setSending(true);
+    setMessages([...messages, userMessage, tempMessage]);
 
-      const chatMessage = await generateText(text);
-      setSending(false);
-      setMessages([...messages, userMessage, chatMessage]);
-    },
-    [messages],
-  );
+    const chatMessage = await generateText(text);
+    setSending(false);
+    setMessages([...messages, userMessage, chatMessage]);
+  };
 
   const contextValue = useMemo(
     () => ({ messages, addMessage, sending, playing, setPlaying }),
-    [messages, addMessage, sending, playing],
+    [messages, sending, playing],
   );
 
   return (

@@ -42,7 +42,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [input.length, listening]);
+  }, []);
 
   useEffect(() => {
     if (!listening && !sending) {
