@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import { AudioLines, Ellipsis, StopCircle } from "lucide-react";
+import Image from "next/image";
 import { cn } from "../utils/cn";
 import { Message, useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";

@@ -1,7 +1,7 @@
-import { useSpeech } from "../utils/speechContext";
 import { cn } from "../utils/cn";
 import { CircleStop, Mic } from "lucide-react";
 import { useConfig } from "../utils/configContext";
+import { useSpeech } from "../utils/speechContext";
 
 const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput } = useSpeech();
@@ -57,7 +57,7 @@ const AudioInput: React.FC = () => {
         onClick={audioButton}
         className={cn(
           "flex shrink-0 text-black border-2 border-gray-300 bg-gray-300 hover:bg-gray-200 p-2 px-3 rounded-full transition-colors",
-          listening && "border-purple-300 bg-purple-200 hover:bg-purple-300",
+          listening && "border-purple-300 bg-purple-300 hover:bg-purple-200",
         )}
       >
         {listening ? <CircleStop /> : <Mic />}

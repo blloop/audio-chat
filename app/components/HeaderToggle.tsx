@@ -1,3 +1,5 @@
+"use client";
+
 import { MessagesSquare, Mic } from "lucide-react";
 import { cn } from "../utils/cn";
 import { useSpeech } from "../utils/speechContext";
@@ -7,9 +9,7 @@ export default function HeaderToggle() {
   const { supported } = useSpeech();
   const { isText, toggleText } = useConfig();
 
-  if (!supported) {
-    return <div className="w-20" />;
-  }
+  if (!supported) return null;
 
   return (
     <div

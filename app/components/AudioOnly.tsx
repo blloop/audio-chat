@@ -1,10 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Mic, Play, Square } from "lucide-react";
+import Image from "next/image";
+import { cn } from "../utils/cn";
 import { useSpeech } from "../utils/speechContext";
 import { useMessage } from "../utils/messageContext";
-import { cn } from "../utils/cn";
-import { useEffect, useState } from "react";
 import { useConfig } from "../utils/configContext";
-import Image from "next/image";
 
 const stateText = {
   init: "Click to start a conversation!",
@@ -78,7 +80,12 @@ const AudioOnly: React.FC = () => {
   };
 
   return (
-    <>
+    <div
+      className={cn(
+        "flex flex-col flex-1 gap-4 items-center justify-center",
+        isText && "hidden",
+      )}
+    >
       <button
         type="button"
         className={cn(
@@ -93,7 +100,7 @@ const AudioOnly: React.FC = () => {
         {renderLogo()}
       </button>
       <p className="text-black">{stateText[currState]}</p>
-    </>
+    </div>
   );
 };
 

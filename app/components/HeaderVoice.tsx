@@ -1,7 +1,9 @@
-import { ChevronDown, ChevronUp, Mars, Speech, Venus } from "lucide-react";
-import { useSpeech } from "../utils/speechContext";
+"use client";
+
 import { useState } from "react";
+import { ChevronDown, ChevronUp, Mars, Speech, Venus } from "lucide-react";
 import { useConfig, VoiceType } from "../utils/configContext";
+import { useSpeech } from "../utils/speechContext";
 
 const voiceList: VoiceType[] = [
   "af_bella",
@@ -15,9 +17,7 @@ export default function HeaderVoice() {
   const { voice, setVoice } = useConfig();
   const [open, setOpen] = useState(false);
 
-  if (!supported) {
-    return <div className="w-20" />;
-  }
+  if (!supported) return null;
 
   const genderIcon = (v: string) => {
     return v.includes("af") ? (

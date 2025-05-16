@@ -1,19 +1,21 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { ArrowUp } from "lucide-react";
 import { useSpeech } from "../utils/speechContext";
 import { useMessage } from "../utils/messageContext";
-import { useEffect, useRef } from "react";
 import { useConfig } from "../utils/configContext";
 
-interface MessageInputProps {
-  handleMessage: () => void;
-}
-
-const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
-  const { sending } = useMessage();
+const MessageInput: React.FC = () => {
+  const { sending, addMessage } = useMessage();
   const { listening, input, setInput } = useSpeech();
   const { isText } = useConfig();
-  const promptRef = useRef<() => void>(handleMessage);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleMessage = async (input: string) => {
+    setInput("");
+    addMessage(input);
+  };
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -24,7 +26,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
             !listening &&
             input.length > 0
           ) {
-            promptRef.current();
+            handleMessage(input);
             inputRef.current?.focus();
           }
         default:
@@ -42,17 +44,13 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, []);
+  }, [inputRef, listening, input]);
 
   useEffect(() => {
     if (!listening && !sending) {
       inputRef.current?.focus();
     }
   }, [listening, sending, isText]);
-
-  useEffect(() => {
-    promptRef.current = handleMessage;
-  }, [handleMessage]);
 
   return (
     <div className="flex gap-2">
@@ -69,7 +67,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ handleMessage }) => {
       />
       <button
         disabled={input.length === 0 || sending}
-        onClick={handleMessage}
+        onClick={() => handleMessage(input)}
         type="button"
         className="bg-purple-500 hover:bg-purple-700 disabled:bg-gray-400 disabled:pointer-events-none transition-colors text-white font-bold p-2 rounded-full"
       >
