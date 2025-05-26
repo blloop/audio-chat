@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "../utils/cn";
-import { useMessage } from "../utils/messageContext";
+import { Message, useMessage } from "../utils/messageContext";
 import { useSpeech } from "../utils/speechContext";
 import { useConfig } from "../utils/configContext";
 import MemoizedChatMessage from "./ChatMessage";
@@ -36,6 +36,20 @@ export default function ChatList() {
     addMessage(input);
   };
 
+  const trimEnd = (message: Message) => {
+    let messageText = message.text;
+    if (
+      messageText.charAt(messageText.length - 2) === "{" &&
+      messageText.charAt(messageText.length - 1) === "}"
+    ) {
+      return {
+        ...message,
+        text: messageText.slice(0, messageText.length - 2),
+      };
+    }
+    return message;
+  };
+
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,7 +66,7 @@ export default function ChatList() {
         <MemoizedChatMessage
           key={i}
           index={i}
-          message={e}
+          message={trimEnd(e)}
           latest={i === messages.length - 1}
         />
       ))}
