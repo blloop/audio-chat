@@ -37,7 +37,7 @@ export default function ChatList() {
   };
 
   const trimEnd = (message: Message) => {
-    let messageText = message.text;
+    const messageText = message.text;
     if (
       messageText.charAt(messageText.length - 2) === "{" &&
       messageText.charAt(messageText.length - 1) === "}"

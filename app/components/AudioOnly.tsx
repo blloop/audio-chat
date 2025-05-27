@@ -16,7 +16,7 @@ const stateText = {
 };
 
 const AudioOnly: React.FC = () => {
-  const { transcript, listen, listening, setInput } = useSpeech();
+  const { transcript, listen, listening, setInput, stop } = useSpeech();
   const { messages, playing, setPlaying } = useMessage();
   const { autoSend, isText } = useConfig();
   const [currState, setCurrState] = useState<keyof typeof stateText>("init");
@@ -45,8 +45,7 @@ const AudioOnly: React.FC = () => {
     if (messages.length === 1) {
       setPlaying(0);
     } else if (playing !== -1) {
-      // TODO: Fix audio not stopping issue
-      // call stop() from useSpeech() here
+      stop();
       setPlaying(-1);
       setCurrState("init");
     } else {
@@ -92,7 +91,7 @@ const AudioOnly: React.FC = () => {
           "size-48 bg-purple-400 transition-colors p-8 rounded-full",
           listening || (currState === "loading" && "pointer-events-none"),
           listening
-            ? "bg-purple-400 pointer-events-none"
+            ? "bg-purple-400"
             : "bg-zinc-300 hover:bg-purple-400",
         )}
         onClick={mainButton}
