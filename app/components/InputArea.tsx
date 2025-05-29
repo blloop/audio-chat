@@ -12,7 +12,7 @@ export default function InputArea() {
     <div
       className={cn(
         "flex flex-col gap-2 p-4 border-t border-gray-200 bg-gray-100",
-        !isText && "hidden",
+        !isText && "hidden"
       )}
     >
       <MessageInput />

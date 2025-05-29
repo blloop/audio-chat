@@ -107,7 +107,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue = useMemo(
     () => ({ messages, addMessage, sending, playing, setPlaying }),
-    [messages, sending, playing],
+    [messages, sending, playing]
   );
 
   return (

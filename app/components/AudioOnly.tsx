@@ -82,7 +82,7 @@ const AudioOnly: React.FC = () => {
     <div
       className={cn(
         "flex flex-col flex-1 gap-4 items-center justify-center",
-        isText && "hidden",
+        isText && "hidden"
       )}
     >
       <button
@@ -90,9 +90,7 @@ const AudioOnly: React.FC = () => {
         className={cn(
           "size-48 bg-purple-400 transition-colors p-8 rounded-full",
           listening || (currState === "loading" && "pointer-events-none"),
-          listening
-            ? "bg-purple-400"
-            : "bg-zinc-300 hover:bg-purple-400",
+          listening ? "bg-purple-400" : "bg-zinc-300 hover:bg-purple-400"
         )}
         onClick={mainButton}
       >

@@ -99,7 +99,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       };
       audioRef.current.ontimeupdate = () => {
         if (audioRef.current) {
-          const percentage = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+          const percentage =
+            (audioRef.current.currentTime / audioRef.current.duration) * 100;
           setProgress(percentage);
         }
       };
@@ -137,11 +138,20 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [message, latest]);
 
   return (
-    <div className={cn("relative group flex items-end",
-      alignment,
-      message.isUser ? "mb-4" : "mb-8"
-    )}>
-      <span className={cn("p-3 z-20 rounded-3xl max-w-[min(100vw,22rem)]", bgColor, textColor)}>
+    <div
+      className={cn(
+        "relative group flex items-end",
+        alignment,
+        message.isUser ? "mb-4" : "mb-8"
+      )}
+    >
+      <span
+        className={cn(
+          "p-3 z-20 rounded-3xl max-w-[min(100vw,22rem)]",
+          bgColor,
+          textColor
+        )}
+      >
         {message.isLoading ? (
           <Image
             className="w-10 h-4 px-1 object-cover"
@@ -159,23 +169,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           "absolute z-10 bottom-0 w-4 h-6",
           alignment,
           bgColor,
-          roundLarge,
+          roundLarge
         )}
       ></div>
       <div
         className={cn(
           "absolute z-10 bottom-0 w-4 h-6 bg-white",
           alignment,
-          roundSmall,
+          roundSmall
         )}
       ></div>
-      {!message.isUser && !message.isLoading &&
-        <progress className="absolute -bottom-5 left-8 w-[calc(100%-4rem)] md:w-[calc(100%-5rem)] h-1.5" value={progress} max="100"></progress>
-      }
+      {!message.isUser && !message.isLoading && (
+        <progress
+          className="absolute -bottom-5 left-8 w-[calc(100%-4rem)] md:w-[calc(100%-5rem)] h-1.5"
+          value={progress}
+          max="100"
+        ></progress>
+      )}
       {!message.isUser && !message.isLoading && (
         <button
           className={cn(
-            "absolute -bottom-8 left-0 p-1 rounded-full hover:bg-purple-200 transition-colors",
+            "absolute -bottom-8 left-0 p-1 rounded-full hover:bg-purple-200 transition-colors"
           )}
           type="button"
           onClick={() => {
@@ -198,7 +212,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       )}
       {!message.isUser && (
         <button
-          className={cn("relative -right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-purple-200 transition-all",
+          className={cn(
+            "relative -right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-purple-200 transition-all",
             copied && "opacity-100 pointer-events-none transition-all"
           )}
           onClick={() => {
