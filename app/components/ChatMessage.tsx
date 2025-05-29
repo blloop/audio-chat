@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState, useRef } from "react";
-import { AudioLines, Ellipsis, StopCircle, Check, Copy } from "lucide-react";
+import { Ellipsis, StopCircle, Check, Copy, Volume2 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "../utils/cn";
 import { Message, useMessage } from "../utils/messageContext";
@@ -33,12 +33,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     : "-left-4 rounded-br-xl";
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
-
   const { autoSpeak, isText, voice } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const playAudio = async () => {
     if (audioRef.current) {
@@ -95,6 +95,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       });
       audioRef.current.onended = () => {
         setPlaying(-1);
+        setProgress(0);
+      };
+      audioRef.current.ontimeupdate = () => {
+        if (audioRef.current) {
+          const percentage = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+          setProgress(percentage);
+        }
       };
     }
     setPlaying(index);
@@ -114,6 +121,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     if (playing !== index && audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      setProgress(0);
     }
   }, [playing]);
 
@@ -129,47 +137,45 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [message, latest]);
 
   return (
-    <div className={cn("flex flex-wrap items-end", alignment)}>
+    <div className={cn("relative group flex items-end",
+      alignment,
+      message.isUser ? "mb-4" : "mb-8"
+    )}>
+      <span className={cn("p-3 z-20 rounded-3xl max-w-[min(100vw,22rem)]", bgColor, textColor)}>
+        {message.isLoading ? (
+          <Image
+            className="w-10 h-4 px-1 object-cover"
+            width={240}
+            height={96}
+            alt="Message is loading."
+            src="/loading.svg"
+          />
+        ) : (
+          specialText[message.type] || message.text
+        )}
+      </span>
       <div
         className={cn(
-          "relative flex flex-col relative p-3 rounded-3xl max-w-xs",
+          "absolute z-10 bottom-0 w-4 h-6",
+          alignment,
           bgColor,
-          textColor,
+          roundLarge,
         )}
-      >
-        <span className="z-20">
-          {message.isLoading ? (
-            <Image
-              className="w-10 h-4 px-1 object-cover"
-              width={240}
-              height={96}
-              alt="Message is loading."
-              src="/loading.svg"
-            />
-          ) : (
-            specialText[message.type] || message.text
-          )}
-        </span>
-        <div
-          className={cn(
-            "absolute z-10 bottom-0 w-4 h-6",
-            alignment,
-            bgColor,
-            roundLarge,
-          )}
-        ></div>
-        <div
-          className={cn(
-            "absolute z-10 bottom-0 w-4 h-6 bg-white",
-            alignment,
-            roundSmall,
-          )}
-        ></div>
-      </div>
+      ></div>
+      <div
+        className={cn(
+          "absolute z-10 bottom-0 w-4 h-6 bg-white",
+          alignment,
+          roundSmall,
+        )}
+      ></div>
+      {!message.isUser && !message.isLoading &&
+        <progress className="absolute -bottom-5 left-8 w-[calc(100%-4rem)] md:w-[calc(100%-5rem)] h-1.5" value={progress} max="100"></progress>
+      }
       {!message.isUser && !message.isLoading && (
         <button
           className={cn(
-            "self-end p-2 rounded-full hover:bg-purple-200 transition-colors",
+            "absolute -bottom-8 left-0 p-1 rounded-full hover:bg-purple-200 transition-colors",
           )}
           type="button"
           onClick={() => {
@@ -182,17 +188,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           }}
         >
           {playing === index ? (
-            <StopCircle className="text-red-500" />
+            <StopCircle className="text-red-500 h-5 w-5" />
           ) : fetching ? (
-            <Ellipsis className="text-purple-500" />
+            <Ellipsis className="text-purple-500 h-5 w-5" />
           ) : (
-            <AudioLines className="text-purple-500" />
+            <Volume2 className="text-purple-500 h-5 w-5" />
           )}
         </button>
       )}
       {!message.isUser && (
         <button
-          className={cn("self-end p-2 rounded-full hover:bg-purple-200 transition-colors", copied && "pointer-events-none")}
+          className={cn("relative -right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 hover:bg-purple-200 transition-all",
+            copied && "opacity-100 pointer-events-none transition-all"
+          )}
           onClick={() => {
             navigator.clipboard.writeText(message.text);
             setCopied(true);
@@ -202,9 +210,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           }}
         >
           {copied ? (
-            <Check className="text-green-500" />
+            <Check className="text-green-500 h-5 w-5" />
           ) : (
-            <Copy className="text-purple-500" />
+            <Copy className="text-purple-500 h-5 w-5" />
           )}
         </button>
       )}

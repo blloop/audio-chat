@@ -25,3 +25,13 @@ body {
     text-wrap: balance;
   }
 }
+
+progress[value]::-webkit-progress-bar {
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1));
+  border-radius: 40px;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1));
+  border-radius: 40px;
+}
