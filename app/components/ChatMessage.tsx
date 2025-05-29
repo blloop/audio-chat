@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState, useRef } from "react";
-import { AudioLines, Ellipsis, StopCircle } from "lucide-react";
+import { AudioLines, Ellipsis, StopCircle, Check, Copy } from "lucide-react";
 import Image from "next/image";
 import { cn } from "../utils/cn";
 import { Message, useMessage } from "../utils/messageContext";
@@ -38,6 +38,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const playAudio = async () => {
     if (audioRef.current) {
@@ -128,7 +129,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [message, latest]);
 
   return (
-    <div className={cn("flex flex-wrap", alignment)}>
+    <div className={cn("flex flex-wrap items-end", alignment)}>
       <div
         className={cn(
           "relative flex flex-col relative p-3 rounded-3xl max-w-xs",
@@ -186,6 +187,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             <Ellipsis className="text-purple-500" />
           ) : (
             <AudioLines className="text-purple-500" />
+          )}
+        </button>
+      )}
+      {!message.isUser && (
+        <button
+          className={cn("self-end p-2 rounded-full hover:bg-purple-200 transition-colors", copied && "pointer-events-none")}
+          onClick={() => {
+            navigator.clipboard.writeText(message.text);
+            setCopied(true);
+            setTimeout(() => {
+              setCopied(false);
+            }, 2000);
+          }}
+        >
+          {copied ? (
+            <Check className="text-green-500" />
+          ) : (
+            <Copy className="text-purple-500" />
           )}
         </button>
       )}
