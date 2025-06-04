@@ -33,6 +33,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     : "-left-4 rounded-br-xl";
   const bgColor = message.isUser ? "bg-purple-500" : "bg-gray-200";
   const textColor = message.isUser ? "text-white" : "text-black";
+  const shadowColor = message.isUser
+    ? "[box-shadow:-0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]"
+    : "[box-shadow:0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]";
   const { autoSpeak, isText, voice } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -149,7 +152,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         className={cn(
           "p-3 z-20 rounded-3xl max-w-[min(100vw,22rem)]",
           bgColor,
-          textColor
+          textColor,
+          shadowColor
         )}
       >
         {message.isLoading ? (
@@ -181,7 +185,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       ></div>
       {!message.isUser && !message.isLoading && (
         <progress
-          className="absolute -bottom-5 left-8 w-[calc(100%-4rem)] md:w-[calc(100%-5rem)] h-1.5"
+          className="absolute -bottom-8 left-8 w-[calc(100%-4rem)] h-7 py-2.5"
           value={progress}
           max="100"
         ></progress>

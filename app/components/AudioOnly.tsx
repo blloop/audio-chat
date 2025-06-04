@@ -42,13 +42,18 @@ const AudioOnly: React.FC = () => {
   }, [listening]);
 
   const mainButton = () => {
+    console.log("mainButton called");
     if (messages.length === 1) {
-      setPlaying(0);
+      console.log("chain 1");
+      setPlaying(playing === 0 ? -1 : 0);
+      console.log("setPlaying", playing);
     } else if (playing !== -1) {
+      console.log("chain 2");
       stop();
       setPlaying(-1);
       setCurrState("init");
     } else {
+      console.log("chain 3");
       setInput("");
       listen();
       setCurrState("listening");
