@@ -12,7 +12,7 @@ export default function ChatList() {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const { playing, addMessage } = useMessage();
   const { transcript, listen, listening, input, setInput } = useSpeech();
-  const { autoSend, autoListen, isText } = useConfig();
+  const { autoSend, isText } = useConfig();
 
   useEffect(() => {
     setInput(transcript);
@@ -25,7 +25,7 @@ export default function ChatList() {
   }, [listening, transcript]);
 
   useEffect(() => {
-    if ((!isText || autoListen) && playing === -1) {
+    if (!isText && playing === -1) {
       setInput("");
       listen();
     }
