@@ -4,6 +4,7 @@ import Image from "next/image";
 import { cn } from "../utils/cn";
 import { Message, useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
+import { useSpeech } from "../utils/speechContext";
 
 const specialText: { [key: string]: string | null } = {
   normal: null,
@@ -36,6 +37,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const shadowColor = message.isUser
     ? "[box-shadow:-0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]"
     : "[box-shadow:0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]";
+  const { stop } = useSpeech();
   const { isText, autoSpeak, voice } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -125,7 +127,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   useEffect(() => {
-    console.log("triggering message", index, "playing is", playing)
+    stop();
     if (playing === index) {
       playAudio();
     }
@@ -137,7 +139,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [playing]);
 
   useEffect(() => {
-    console.log("triggering message", index, "latest is", latest)
     if (
       (!isText || autoSpeak) &&
       latest &&

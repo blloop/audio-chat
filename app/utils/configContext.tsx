@@ -32,21 +32,22 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [isText, setIsText] = useState(true);
   const [voice, setVoice] = useState<VoiceType>("af_bella");
 
-  const contextValue = useMemo(() => ({
-    autoSend,
-    setAutoSend,
-    autoSpeak,
-    setAutoSpeak,
-    isText,
-    toggleText: () => setIsText(!isText),
-    voice,
-    setVoice: (str: VoiceType) => setVoice(str),
-  }), [autoSend, autoSpeak, isText, voice]);
+  const contextValue = useMemo(
+    () => ({
+      autoSend,
+      setAutoSend,
+      autoSpeak,
+      setAutoSpeak,
+      isText,
+      toggleText: () => setIsText(!isText),
+      voice,
+      setVoice: (str: VoiceType) => setVoice(str),
+    }),
+    [autoSend, autoSpeak, isText, voice]
+  );
 
   return (
-    <ConfigContext.Provider
-      value={contextValue}
-    >
+    <ConfigContext.Provider value={contextValue}>
       {children}
     </ConfigContext.Provider>
   );

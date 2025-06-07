@@ -9,7 +9,8 @@ import { useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
 
 const stateText = {
-  init: "Click to start a conversation!",
+  init: "Click to begin a conversation!",
+  resume: "Click to resume your conversation!",
   listening: "Listening...",
   loading: "Loading, please wait...",
   speaking: "Speaking...",
@@ -24,9 +25,8 @@ const AudioOnly: React.FC = () => {
   const [currState, setCurrState] = useState<keyof typeof stateText>("init");
 
   useEffect(() => {
-    console.log("updating state! listening:", listening, "playing:", playing)
     if (listening) {
-      setCurrState("listening")
+      setCurrState("listening");
     } else if (playing === -1) {
       setCurrState("init");
     } else {
@@ -38,7 +38,7 @@ const AudioOnly: React.FC = () => {
     if (!listening && transcript) {
       setCurrState("loading");
     }
-  }, []);
+  }, [listening]);
 
   // Automatically switch to listening when message is done playing
   useEffect(() => {
@@ -107,7 +107,7 @@ const AudioOnly: React.FC = () => {
         type="button"
         className={cn(
           "size-48 bg-purple-400 transition-colors p-8 rounded-full bg-zinc-300 hover:bg-purple-400",
-          currState === "loading" && "pointer-events-none",
+          currState === "loading" && "pointer-events-none"
         )}
         onClick={mainButton}
       >
