@@ -23,7 +23,9 @@ export async function POST(req: NextRequest) {
 
     if (!ip) {
       console.error("Could not determine IP address");
-      return new Response("Could not determine IP address", { status: 500 });
+      return new Response("Could not determine IP address", {
+        status: 500,
+      });
     }
 
     const key = `kokoro_rate_limit:${ip}`;
@@ -46,8 +48,10 @@ export async function POST(req: NextRequest) {
     if (!process.env.REPLICATE_API_TOKEN) {
       console.error("REPLICATE_API_TOKEN environment variable not set.");
       return NextResponse.json(
-        { error: "Server configuration error: Replicate API token missing." },
-        { status: 500 },
+        {
+          error: "Server configuration error: Replicate API token missing.",
+        },
+        { status: 500 }
       );
     }
 
@@ -66,7 +70,7 @@ export async function POST(req: NextRequest) {
       console.error("Unexpected output format from Replicate:", output);
       return NextResponse.json(
         { error: "Unexpected response format from speech service" },
-        { status: 500 },
+        { status: 500 }
       );
     }
   } catch (error) {
@@ -77,7 +81,7 @@ export async function POST(req: NextRequest) {
         : "Unknown error during speech generation";
     return NextResponse.json(
       { error: "Failed to generate speech", details: errorMessage },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

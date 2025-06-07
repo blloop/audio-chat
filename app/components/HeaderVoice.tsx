@@ -74,7 +74,7 @@ export default function HeaderVoice() {
                 {genderIcon(v)}
                 {renderName(v)}
               </button>
-            ),
+            )
           )}
         </div>
       )}

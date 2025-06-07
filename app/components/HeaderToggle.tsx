@@ -23,7 +23,7 @@ export default function HeaderToggle() {
       <div
         className={cn(
           "rounded-full absolute bg-purple-500 w-10 h-8 transition-[right]",
-          isText ? "right-10" : "right-0",
+          isText ? "right-10" : "right-0"
         )}
       />
     </div>

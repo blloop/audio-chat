@@ -24,7 +24,7 @@ function iteratorToStream(iterator: AsyncIterable<string>) {
 }
 
 async function* mapToStrings(
-  source: AsyncGenerator<ServerSentEvent>,
+  source: AsyncGenerator<ServerSentEvent>
 ): AsyncGenerator<string> {
   for await (const event of source) {
     yield event.data;
@@ -40,7 +40,9 @@ export async function POST(req: Request) {
 
     if (!ip) {
       console.error("Could not determine IP address");
-      return new Response("Could not determine IP address", { status: 500 });
+      return new Response("Could not determine IP address", {
+        status: 500,
+      });
     }
 
     const key = `llama3_rate_limit:${ip}`;
