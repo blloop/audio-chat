@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useRef } from "react";
+import React, { memo, useEffect, useState, useRef, useMemo } from "react";
 import { Ellipsis, StopCircle, Check, Copy, Volume2 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "../utils/cn";
@@ -36,12 +36,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   const shadowColor = message.isUser
     ? "[box-shadow:-0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]"
     : "[box-shadow:0.25rem_0.25rem_0.25rem_theme(colors.gray.300)]";
-  const { autoSpeak, isText, voice } = useConfig();
+  const { isText, autoSpeak, voice } = useConfig();
   const { playing, setPlaying } = useMessage();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [fetching, setFetching] = useState(false);
   const [copied, setCopied] = useState(false);
   const [progress, setProgress] = useState(0);
+  const memoizedProgress = useMemo(() => progress, [progress]);
 
   const playAudio = async () => {
     if (audioRef.current) {
@@ -112,13 +113,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   const stopAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+    if (playing === index) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlaying(-1);
+    } else {
+      playAudio();
     }
   };
 
   useEffect(() => {
+    console.log("triggering message", index, "playing is", playing)
     if (playing === index) {
       playAudio();
     }
@@ -130,6 +137,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [playing]);
 
   useEffect(() => {
+    console.log("triggering message", index, "latest is", latest)
     if (
       (!isText || autoSpeak) &&
       latest &&
@@ -186,7 +194,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       {!message.isUser && !message.isLoading && (
         <progress
           className="absolute -bottom-8 left-8 w-[calc(100%-4rem)] h-7 py-2.5"
-          value={progress}
+          value={memoizedProgress}
           max="100"
         ></progress>
       )}
@@ -196,14 +204,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             "absolute -bottom-8 left-0 p-1 rounded-full hover:bg-purple-200 transition-colors"
           )}
           type="button"
-          onClick={() => {
-            if (playing === index) {
-              stopAudio();
-              setPlaying(-1);
-            } else {
-              playAudio();
-            }
-          }}
+          onClick={stopAudio}
         >
           {playing === index ? (
             <StopCircle className="text-red-500 h-5 w-5" />

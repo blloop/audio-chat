@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState, useMemo } from "react";
 
 export type VoiceType = "af_bella" | "af_jessica" | "am_fenrir" | "am_michael";
 
@@ -32,18 +32,20 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [isText, setIsText] = useState(true);
   const [voice, setVoice] = useState<VoiceType>("af_bella");
 
+  const contextValue = useMemo(() => ({
+    autoSend,
+    setAutoSend,
+    autoSpeak,
+    setAutoSpeak,
+    isText,
+    toggleText: () => setIsText(!isText),
+    voice,
+    setVoice: (str: VoiceType) => setVoice(str),
+  }), [autoSend, autoSpeak, isText, voice]);
+
   return (
     <ConfigContext.Provider
-      value={{
-        autoSend,
-        setAutoSend,
-        autoSpeak,
-        setAutoSpeak,
-        isText,
-        toggleText: () => setIsText(!isText),
-        voice,
-        setVoice: (str: VoiceType) => setVoice(str),
-      }}
+      value={contextValue}
     >
       {children}
     </ConfigContext.Provider>
