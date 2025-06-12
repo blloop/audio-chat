@@ -2,10 +2,12 @@ import { cn } from "../utils/cn";
 import { CircleStop, Mic } from "lucide-react";
 import { useConfig } from "../utils/configContext";
 import { useSpeech } from "../utils/speechContext";
+import { useMessage } from "../utils/messageContext";
 
 const AudioInput: React.FC = () => {
   const { listen, listening, supported, setInput, stop } = useSpeech();
   const { autoSend, setAutoSend, autoSpeak, setAutoSpeak } = useConfig();
+  const { setPlaying } = useMessage();
 
   if (!supported) {
     return (
@@ -16,6 +18,7 @@ const AudioInput: React.FC = () => {
   }
 
   const audioButton = () => {
+    setPlaying(-1);
     if (listening) {
       stop();
     } else {
