@@ -20,56 +20,44 @@ const logoClass = "font-thin size-full text-white";
 
 const AudioOnly: React.FC = () => {
   const { transcript, listen, listening, setInput, stop } = useSpeech();
-  const { playing, setPlaying } = useMessage();
-  const { isText } = useConfig();
+  const { messages, playing, setPlaying } = useMessage();
+  const { isText, autoSpeak } = useConfig();
   const [currState, setCurrState] = useState<keyof typeof stateText>("init");
 
+  // Update state when speaking starts/stops
   useEffect(() => {
-    if (listening) {
-      setCurrState("listening");
-    } else if (playing === -1) {
-      setCurrState("init");
-    } else {
+    if (playing !== -1) {
       setCurrState("speaking");
-    }
-  }, [listening, playing]);
-
-  useEffect(() => {
-    if (!listening && transcript) {
-      setCurrState("loading");
-    }
-  }, [listening]);
-
-  // Automatically switch to listening when message is done playing
-  useEffect(() => {
-    if (!isText && playing === -1) {
+    } else if (!isText) {
+      // Automatically listen when audio stops
       setInput("");
       listen();
+    } else {
+      setCurrState("init");
     }
   }, [playing]);
 
-  // useEffect(() => {
-  //   if (!listening) {
-  //     if ((!isText || autoSend) && !listening && transcript) {
-  //       setCurrState("loading");
-  //     } else {
-  //       setCurrState("init");
-  //     }
-  //   } else {
-  //     setCurrState("listening");
-  //   }
-  // }, [listening]);
+  // Update state when listening starts/stops
+  useEffect(() => {
+    if (listening) {
+      setCurrState("listening");
+    } else if ((!isText || autoSpeak) && transcript) {
+      setCurrState("loading");
+    } else {
+      setCurrState("init");
+    }
+  }, [listening]);
 
+  // Handle main button interface
   const mainButton = () => {
     if (listening) {
       stop();
     } else if (playing === -1) {
-      console.log("chain 3");
-      setInput("");
-      listen();
-      setCurrState("listening");
+      // Play last message
+      setPlaying(messages.length - 1);
+      setCurrState("speaking");
     } else {
-      console.log("chain 2");
+      // Stop conversation in all other cases
       setPlaying(-1);
       setCurrState("init");
     }

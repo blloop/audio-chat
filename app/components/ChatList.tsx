@@ -14,10 +14,10 @@ export default function ChatList() {
   const { transcript, listen, listening, input, setInput } = useSpeech();
   const { autoSend, isText } = useConfig();
 
-  // Scroll to the bottom of messages when updated
+  // Scroll to the bottom when messages are updated or mode is toggled
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isText]);
 
   // Set input value based on transcript from speech API
   useEffect(() => {
