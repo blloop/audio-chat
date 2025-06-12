@@ -9,8 +9,8 @@ import { useMessage } from "../utils/messageContext";
 import { useConfig } from "../utils/configContext";
 
 const stateText = {
-  init: "Click to begin a conversation!",
-  resume: "Click to resume your conversation!",
+  start: "Click to start a conversation!",
+  init: "Click to resume your conversation!",
   listening: "Listening...",
   loading: "Loading, please wait...",
   speaking: "Speaking...",
@@ -101,7 +101,11 @@ const AudioOnly: React.FC = () => {
       >
         {renderLogo()}
       </button>
-      <p className="text-black">{stateText[currState]}</p>
+      <p className="text-black">
+        {currState === "init" && messages.length === 1
+          ? stateText["start"]
+          : stateText[currState]}
+      </p>
     </div>
   );
 };

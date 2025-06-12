@@ -10,8 +10,8 @@ import MemoizedChatMessage from "./ChatMessage";
 export default function ChatList() {
   const { messages } = useMessage();
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const { playing, addMessage } = useMessage();
-  const { transcript, listen, listening, input, setInput } = useSpeech();
+  const { addMessage } = useMessage();
+  const { transcript, listening, input, setInput } = useSpeech();
   const { autoSend, isText } = useConfig();
 
   // Scroll to the bottom when messages are updated or mode is toggled
