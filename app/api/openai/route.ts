@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       return new Response("Prompt is required", { status: 400 });
     }
 
-    const streamIterator = replicate.stream("meta/meta-llama-3-8b-instruct", {
+    const streamIterator = replicate.stream("openai/gpt-4.1-nano", {
       input: { prompt, max_new_tokens: 128 },
     });
 
