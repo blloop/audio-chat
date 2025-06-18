@@ -41,13 +41,16 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   ]);
 
-  const generateText = async (prompt: string): Promise<Message> => {
-    const response = await fetch("/api/llama3", {
+  const generateText = async (
+    prompt: string,
+    history: Message[]
+  ): Promise<Message> => {
+    const response = await fetch("/api/openai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, history }),
     });
 
     if (!response.ok) {
@@ -100,7 +103,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     setSending(true);
     setMessages([...messages, userMessage, tempMessage]);
 
-    const chatMessage = await generateText(text);
+    const chatMessage = await generateText(text, messages.slice(-4));
     setSending(false);
     setMessages([...messages, userMessage, chatMessage]);
   };

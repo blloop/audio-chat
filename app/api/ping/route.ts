@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       });
     }
 
-    const key = `llama3_rate_limit:${ip}`;
+    const key = `openai_rate_limit:${ip}`;
     const current = await redis.get(key);
 
     const count = parseInt((current as string) ?? "0", 10);

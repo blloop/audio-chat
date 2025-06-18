@@ -8,6 +8,7 @@ const replicate = new Replicate({
 
 const MAX_REQUESTS = 64;
 const SECONDS_IN_DAY = 86400;
+const promptFallback = "You are a helpful assistant.";
 
 // Helper function to convert async iterator to ReadableStream
 function iteratorToStream(iterator: AsyncIterable<string>) {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const key = `llama3_rate_limit:${ip}`;
+    const key = `openai_rate_limit:${ip}`;
     const current = await redis.incr(key);
 
     if (current === 1) {
@@ -56,14 +57,27 @@ export async function POST(req: Request) {
       return new Response("Too many requests", { status: 429 });
     }
 
-    const { prompt } = await req.json();
+    const { prompt, history } = await req.json();
 
     if (!prompt) {
       return new Response("Prompt is required", { status: 400 });
     }
 
-    const streamIterator = replicate.stream("openai/gpt-4.1-nano", {
-      input: { prompt, max_new_tokens: 128 },
+    let modelPrompt = process.env.SYSTEM_PROMPT || promptFallback;
+    modelPrompt += "Here are your last 4 messages: ";
+    modelPrompt += history
+      .map(
+        (msg: { isUser: boolean; text: string }) =>
+          `[${msg.isUser ? "user" : "assistant"}]: ${msg.text}`
+      )
+      .join("\n");
+
+    const streamIterator = replicate.stream("openai/gpt-4o-mini", {
+      input: {
+        prompt,
+        system_prompt: modelPrompt,
+        max_completion_tokens: 128,
+      },
     });
 
     // Convert the async iterator to a ReadableStream
