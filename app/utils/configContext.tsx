@@ -2,7 +2,11 @@
 
 import { createContext, ReactNode, useContext, useState, useMemo } from "react";
 
-export type VoiceType = "af_bella" | "af_jessica" | "am_fenrir" | "am_michael";
+export type VoiceType =
+  | "Friendly_Person"
+  | "Calm_Woman"
+  | "Decent_Boy"
+  | "Exuberant_Girl";
 
 interface ConfigContextType {
   autoSend: boolean;
@@ -22,7 +26,7 @@ const ConfigContext = createContext<ConfigContextType>({
   setAutoSpeak: () => {},
   isText: false,
   toggleText: () => {},
-  voice: "af_bella",
+  voice: "Friendly_Person",
   setVoice: () => {},
 });
 
@@ -30,7 +34,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [autoSend, setAutoSend] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(false);
   const [isText, setIsText] = useState(true);
-  const [voice, setVoice] = useState<VoiceType>("af_bella");
+  const [voice, setVoice] = useState<VoiceType>("Friendly_Person");
 
   const contextValue = useMemo(
     () => ({

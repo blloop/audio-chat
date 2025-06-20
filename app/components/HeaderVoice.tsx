@@ -6,10 +6,10 @@ import { useConfig, VoiceType } from "../utils/configContext";
 import { useSpeech } from "../utils/speechContext";
 
 const voiceList: VoiceType[] = [
-  "af_bella",
-  "af_jessica",
-  "am_fenrir",
-  "am_michael",
+  "Friendly_Person",
+  "Calm_Woman",
+  "Decent_Boy",
+  "Exuberant_Girl",
 ];
 
 export default function HeaderVoice() {
@@ -20,15 +20,20 @@ export default function HeaderVoice() {
   if (!supported) return null;
 
   const genderIcon = (v: string) => {
-    return v.includes("af") ? (
+    return v.includes("a") ? (
       <Venus className="h-6 inline text-pink-500" />
     ) : (
       <Mars className="h-6 inline text-blue-500" />
     );
   };
 
-  const renderName = (v: string) => {
-    return `${v.split("_")[1].slice(0, 1).toUpperCase()}${v.split("_")[1].slice(1)}`;
+  const flagIcon = (v: string) => {
+    return (
+      <img
+        className="size-8"
+        src={v.toLowerCase().includes("b") ? "/uk.svg" : "/us.svg"}
+      />
+    );
   };
 
   const selectName = (v: VoiceType) => {
@@ -42,10 +47,8 @@ export default function HeaderVoice() {
         onClick={() => setOpen(!open)}
         className="h-full cursor-pointer pl-5 mr-2 bg-gray-300 hover:bg-gray-200 transition-colors border-gray-300 border-2 rounded-full relative flex gap-1 px-2 justify-end items-center"
       >
-        {/* {genderIcon(voice)} */}
-        <Speech
-          className={voice.includes("af") ? "text-pink-500" : "text-blue-500"}
-        />
+        {genderIcon(voice)}
+        {flagIcon(voice)}
         {open ? (
           <ChevronUp className="size-4" />
         ) : (
@@ -62,7 +65,7 @@ export default function HeaderVoice() {
               >
                 <span className="absolute left-2">&#10003;</span>
                 {genderIcon(v)}
-                {renderName(v)}
+                {flagIcon(v)}
               </p>
             ) : (
               <button
@@ -72,7 +75,7 @@ export default function HeaderVoice() {
                 className="flex items-center gap-1 pl-5 p-1 hover:bg-gray-200 transition-colors w-full first:rounded-t-lg last:rounded-b-lg"
               >
                 {genderIcon(v)}
-                {renderName(v)}
+                {flagIcon(v)}
               </button>
             )
           )}

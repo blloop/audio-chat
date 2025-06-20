@@ -52,12 +52,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Call the Replicate API
-    const output = await replicate.run("minimax/speech-02-turbo", {input: {
-      text,
-      voice_id,
-      sample_rate: 16000,
-      bitrate: 32000
-    }});
+    const output = await replicate.run("minimax/speech-02-turbo", {
+      input: {
+        text,
+        voice_id,
+        sample_rate: 16000,
+        bitrate: 32000,
+      },
+    });
 
     // Check if the output is a ReadableStream
     if (output instanceof ReadableStream) {
