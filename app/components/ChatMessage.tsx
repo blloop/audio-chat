@@ -60,7 +60,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       // Fetch new audio
       setFetching(true);
       try {
-        const response = await fetch("/api/kokoro", {
+        const response = await fetch("/api/minimax", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
