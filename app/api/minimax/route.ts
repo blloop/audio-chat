@@ -10,10 +10,6 @@ const replicate = new Replicate({
 const MAX_REQUESTS = 64;
 const SECONDS_IN_DAY = 86400;
 
-const kokoroId =
-  "jaaari/kokoro-82m:f559560eb822dc509045f3921a1921234918b91739db4bf3daab2169b71c7a13";
-// "lucataco/orpheus-3b-0.1-ft:79f2a473e6a9720716a473d9b2f2951437dbf91dc02ccb7079fb3d89b881207f";
-
 export async function POST(req: NextRequest) {
   try {
     const ip =
@@ -28,7 +24,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const key = `kokoro_rate_limit:${ip}`;
+    const key = `minimax_rate_limit:${ip}`;
     const current = await redis.incr(key);
 
     if (current === 1) {
@@ -39,7 +35,7 @@ export async function POST(req: NextRequest) {
       return new Response("Too many requests", { status: 429 });
     }
 
-    const { text, voice = "af_bella" } = await req.json();
+    const { text, voice_id = "Friendly_Person" } = await req.json();
 
     if (!text) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
@@ -56,7 +52,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Call the Replicate API
-    const output = await replicate.run(kokoroId, { input: { text, voice } });
+    const output = await replicate.run("minimax/speech-02-turbo", {
+      input: {
+        text,
+        voice_id,
+        sample_rate: 16000,
+        bitrate: 32000,
+      },
+    });
 
     // Check if the output is a ReadableStream
     if (output instanceof ReadableStream) {

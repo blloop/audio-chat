@@ -53,19 +53,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     } else if (message.type !== "normal") {
       // Play hard-coded
       if (!audioRef.current) {
-        audioRef.current = new Audio(`/${voice}_${message.type}.wav`);
+        audioRef.current = new Audio(`/${voice}_${message.type}.mp3`);
       }
       startAudio();
     } else {
       // Fetch new audio
       setFetching(true);
       try {
-        const response = await fetch("/api/kokoro", {
+        const response = await fetch("/api/minimax", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: message.text, voice }),
+          body: JSON.stringify({ text: message.text, voice_id: voice }),
         });
 
         if (!response.ok) {
