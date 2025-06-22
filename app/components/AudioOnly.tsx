@@ -95,17 +95,16 @@ const AudioOnly: React.FC = () => {
       <button
         type="button"
         className={cn(
-          "size-48 transition-colors p-8 rounded-full border-4 border-purple-500 bg-purple-400 hover:bg-purple-500",
+          "size-48 transition-colors p-8 rounded-full bg-purple-400 hover:bg-purple-500",
           currState === "loading" && "pointer-events-none"
         )}
         onClick={mainButton}
       >
         {renderLogo()}
       </button>
-      <p className={cn(
-        "text-black",
-        currState === "listening" && "text-white"
-      )}>
+      <p
+        className={cn("text-black", currState === "listening" && "text-white")}
+      >
         {currState === "init" && messages.length === 1
           ? stateText["start"]
           : stateText[currState]}

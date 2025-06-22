@@ -14,14 +14,23 @@ export default function HeaderToggle() {
   return (
     <div
       onClick={() => toggleText()}
-      className={cn("cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors border-gray-300 border-2 rounded-full relative flex w-18 gap-4 px-2 justify-end items-center",
+      className={cn(
+        "cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors border-gray-300 border-2 rounded-full relative flex w-18 gap-4 px-2 justify-end items-center",
         listening && "bg-purple-400 border-purple-400 hover:bg-purple-300"
       )}
     >
       <MessagesSquare
-        className={cn("size-6 z-10", isText ? "text-gray-200" : "text-gray-700")}
+        className={cn(
+          "size-6 z-10",
+          isText ? "text-gray-200" : "text-gray-700"
+        )}
       />
-      <Mic className={cn("size-6 z-10", !isText ? "text-gray-200" : "text-gray-700")} />
+      <Mic
+        className={cn(
+          "size-6 z-10",
+          !isText ? "text-gray-200" : "text-gray-700"
+        )}
+      />
       <div
         className={cn(
           "rounded-full absolute bg-purple-500 w-10 h-7 transition-[right]",
