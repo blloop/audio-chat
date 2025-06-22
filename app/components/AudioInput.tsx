@@ -29,7 +29,7 @@ const AudioInput: React.FC = () => {
 
   return (
     <div className="flex flex-row-reverse flex-wrap gap-4 items-center justify-between">
-      <div className="px-2 flex flex-wrap gap-4 items-center">
+      <div className="px-2 flex flex-wrap gap-4 items-center justify-end">
         <div className="flex gap-2">
           <input
             id="autoSend"
