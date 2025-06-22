@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="relative antialiased mx-auto max-w-xl">
+      <body>
         <ConfigProvider>
           <SpeechProvider>
             <MessageProvider>{children}</MessageProvider>

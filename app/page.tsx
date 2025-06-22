@@ -5,7 +5,7 @@ import Header from "./components/Header";
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen font-sans bg-white">
+    <div className="relative flex flex-col h-screen font-sans bg-white mx-auto max-w-xl">
       <Header />
       <ChatList />
       <InputArea />

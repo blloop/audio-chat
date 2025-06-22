@@ -78,7 +78,7 @@ const AudioOnly: React.FC = () => {
             width={240}
             height={96}
             alt="Response is loading."
-            src="/loading.svg"
+            src="/loading_white.svg"
           />
         );
     }
@@ -87,21 +87,25 @@ const AudioOnly: React.FC = () => {
   return (
     <div
       className={cn(
-        "flex flex-col flex-1 gap-4 items-center justify-center",
-        isText && "hidden"
+        "flex flex-col flex-1 gap-4 items-center justify-center transition-colors",
+        isText && "hidden",
+        currState === "listening" && "bg-purple-400"
       )}
     >
       <button
         type="button"
         className={cn(
-          "size-48 bg-purple-400 transition-colors p-8 rounded-full bg-zinc-300 hover:bg-purple-400",
+          "size-48 transition-colors p-8 rounded-full border-4 border-purple-500 bg-purple-400 hover:bg-purple-500",
           currState === "loading" && "pointer-events-none"
         )}
         onClick={mainButton}
       >
         {renderLogo()}
       </button>
-      <p className="text-black">
+      <p className={cn(
+        "text-black",
+        currState === "listening" && "text-white"
+      )}>
         {currState === "init" && messages.length === 1
           ? stateText["start"]
           : stateText[currState]}
